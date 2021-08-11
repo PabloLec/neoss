@@ -1,0 +1,17 @@
+{
+  "name": "netwatch",
+  "version": "0.0.1",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "blessed": "^0.1.81",
+    "blessed-contrib": "^4.10.0",
+    "whois": "^2.13.5",
+    "whois-json": "^2.0.4"
+  }
+}
