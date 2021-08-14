@@ -10,8 +10,10 @@
   "license": "ISC",
   "dependencies": {
     "blessed": "^0.1.81",
+    "neo-blessed": "^0.2.0",
     "blessed-contrib": "^4.10.0",
     "whois": "^2.13.5",
-    "whois-json": "^2.0.4"
+    "whois-json": "^2.0.4",
+    "pino": "^6.13.0"
   }
 }
