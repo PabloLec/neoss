@@ -3,6 +3,7 @@ var blessed = require("neo-blessed"),
   Node = blessed.Node,
   Box = blessed.Box;
 
+const helper = require("./helper");
 const pino = require("pino");
 const logger = pino(pino.destination("/tmp/node.log"));
 
@@ -20,9 +21,6 @@ function Table(options) {
   options.style.header = options.style.header || {};
   options.style.cell = options.style.cell || {};
   options.align = options.align || "center";
-
-  // Regular tables do not get custom height (this would
-  // require extra padding). Maybe add in the future.
   delete options.height;
 
   Box.call(this, options);
@@ -30,13 +28,13 @@ function Table(options) {
   this.pad = options.pad != null ? options.pad : 2;
 
   this.selected = [0, 0];
+  this.currentSocket = null;
   this.table = [];
 
   this.setData(options.rows || options.data);
 
   this.on("attach", function () {
     self.setContent("");
-    self.setData(self.rows);
   });
 
   this.on("resize", function () {
@@ -68,15 +66,24 @@ function Table(options) {
       return;
     }
     this.selected = [this.selected[0] - 1, this.selected[1]];
+    this.currentSocket = this.table.data[this.selected[0]];
     this.setData(this.table);
     self.screen.render();
   });
 
   this.key(["down"], function (ch, key) {
-    if (this.selected[0] + 1 == this.rows.length) {
+    if (this.selected[0] + 1 == this.table.data.length) {
       return;
     }
     this.selected = [this.selected[0] + 1, this.selected[1]];
+    this.currentSocket = this.table.data[this.selected[0]];
+    this.setData(this.table);
+    self.screen.render();
+  });
+
+  this.key(["s"], function (ch, key) {
+    this.table.data = helper.sortBy(this.selected[1], this.table.data);
+    this.selected = [helper.retrieveSocket(this.currentSocket, this.table.data, this.selected[0]), this.selected[1]];
     this.setData(this.table);
     self.screen.render();
   });
@@ -108,9 +115,6 @@ Table.prototype._calculateMaxes = function () {
   }, 0);
   total += maxes.length + 1;
 
-  // XXX There might be an issue with resizing where on the first resize event
-  // width appears to be less than total if it's a percentage or left/right
-  // combination.
   if (this.width < total) {
     delete this.position.width;
   }
@@ -143,8 +147,6 @@ Table.prototype.setRows = Table.prototype.setData = function (table) {
 
   var lines = Math.floor(this.screen.lines.length / 2) - 1;
 
-  logger.info("" + this.selected[0]);
-
   if (Array.isArray(table)) {
     this.rows = table || [];
   } else {
@@ -165,11 +167,8 @@ Table.prototype.setRows = Table.prototype.setData = function (table) {
   this.rows = this.rows.slice(this.selected[0], lines + this.selected[0]);
 
   if (typeof table.headers !== "undefined") {
-    logger.info("AAAAAAAAAAAAaa");
     this.rows.unshift(table.headers);
   }
-
-  //logger.info(this.rows);
 
   this._calculateMaxes();
 
@@ -248,12 +247,10 @@ Table.prototype.render = function () {
   var width = coords.xl - coords.xi - this.iright,
     height = coords.yl - coords.yi - this.ibottom;
 
-  // Apply attributes to header cells and cells.
   for (var y = this.itop; y < height; y++) {
     if (!lines[yi + y]) break;
     for (var x = this.ileft; x < width; x++) {
       if (!lines[yi + y][xi + x]) break;
-      // Check to see if it's not the default attr. Allows for tags:
       if (lines[yi + y][xi + x][0] !== dattr) continue;
       if (y === this.itop) {
         lines[yi + y][xi + x][0] = hattr;
@@ -266,7 +263,6 @@ Table.prototype.render = function () {
 
   if (!this.border || this.options.noCellBorders) return coords;
 
-  // Draw border with correct angles.
   ry = 0;
   for (i = 0; i < self.rows.length + 1; i++) {
     if (!lines[yi + ry]) break;

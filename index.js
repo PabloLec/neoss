@@ -34,8 +34,6 @@ ls.on("close", (code) => {
     data: connections,
     colWidth: [5, 5, 5, 5, 20, 10, 20, 10, 10, 10],
   });
-  //console.log(connections);
-  logger.info("Data loaded");
   screen.render();
 });
 
@@ -97,7 +95,7 @@ var table = Table({
   tags: true,
   top: "0",
   left: "center",
-  width: "90%",
+  width: "100%",
   height: "90%",
   data: [
     ["Animals", "Foods"],
