@@ -4,6 +4,7 @@ var blessed = require("neo-blessed"),
   Box = blessed.Box;
 
 const helper = require("./helper");
+const popups = require("./popups");
 const pino = require("pino");
 const logger = pino(pino.destination("/tmp/node.log"));
 
@@ -30,6 +31,7 @@ function Table(options) {
   this.selected = [0, 0];
   this.currentSocket = null;
   this.table = [];
+  this.popupVisible = false;
 
   this.setData(options.rows || options.data);
 
@@ -86,6 +88,16 @@ function Table(options) {
     this.selected = [helper.retrieveSocket(this.currentSocket, this.table.data, this.selected[0]), this.selected[1]];
     this.setData(this.table);
     self.screen.render();
+  });
+
+  this.key(["enter"], function (ch, key) {
+    if (this.popupVisible) {
+      popups.removePopup(this.screen);
+      this.popupVisible = false;
+      return;
+    }
+    popups.spawnProtocolBox(this.screen);
+    this.popupVisible = true;
   });
 }
 
