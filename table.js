@@ -91,13 +91,8 @@ function Table(options) {
   });
 
   this.key(["enter"], function (ch, key) {
-    if (this.popupVisible) {
-      popups.removePopup(this.screen);
-      this.popupVisible = false;
-      return;
-    }
-    popups.spawnProtocolBox(this.screen);
-    this.popupVisible = true;
+    let content = Object.values(this.table.data[this.selected[0]])[this.selected[1]];
+    popups.handlePopup(this.screen, this.selected[1], content);
   });
 }
 

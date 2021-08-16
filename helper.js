@@ -58,10 +58,10 @@ function sortBy(column, data) {
       sort("state");
       break;
     case 2:
-      sort("received", true);
+      sort("receiveQueue", true);
       break;
     case 3:
-      sort("sent", true);
+      sort("sendQueue", true);
       break;
     case 4:
       sort("localAddress");

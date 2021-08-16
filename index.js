@@ -30,7 +30,17 @@ ls.on("close", (code) => {
   //console.log(`child process exited with code ${code}`);
   formatOutput(cmdOutput);
   table.setData({
-    headers: ["protocol", "state", "received", "sent", "localAddress", "localPort", "peerAddress", "peerPort", "users"],
+    headers: [
+      "protocol",
+      "state",
+      "receiveQueue",
+      "sendQueue",
+      "localAddress",
+      "localPort",
+      "peerAddress",
+      "peerPort",
+      "users",
+    ],
     data: connections,
     colWidth: [5, 5, 5, 5, 20, 10, 20, 10, 10, 10],
   });
@@ -58,8 +68,8 @@ function formatOutput(data) {
     connections[i] = {};
     connections[i].protocol = line[0];
     connections[i].state = line[1];
-    connections[i].received = line[2];
-    connections[i].sent = line[3];
+    connections[i].receiveQueue = line[2];
+    connections[i].send = line[3];
     connections[i].localAddress = line[4].match("([^:]+):")[1];
     connections[i].localPort = line[4].match(":([0-9]+)")[1];
     connections[i].peerAddress = line[5].match("([^:]+):")[1];
