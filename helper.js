@@ -1,7 +1,8 @@
 const pino = require("pino");
 const logger = pino(pino.destination("/tmp/node.log"));
 
-var lastSort = null;
+var lastSort;
+var lastScroll;
 
 function retrieveSocket(socket, data, currentIndex) {
   if (socket == null) {
@@ -82,6 +83,25 @@ function sortBy(column, data) {
   return data;
 }
 
-// TODO: getScroll function
+function getScroll(row, screenLines) {
+  if (lastScroll === undefined) {
+    lastScroll = [0, screenLines - 1];
+  }
 
-module.exports = { sortBy, retrieveSocket };
+  var newScroll;
+
+  if (row >= lastScroll[0] && row < lastScroll[1]) {
+    newScroll = lastScroll;
+  } else if (row < lastScroll[0]) {
+    diff = lastScroll[0] - row;
+    newScroll = [lastScroll[0] - diff, lastScroll[1] - diff];
+  } else if (row >= lastScroll[1]) {
+    diff = row - lastScroll[1] + 1;
+    newScroll = [lastScroll[0] + diff, lastScroll[1] + diff];
+  }
+
+  lastScroll = newScroll;
+  return newScroll;
+}
+
+module.exports = { sortBy, retrieveSocket, getScroll };

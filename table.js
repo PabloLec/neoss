@@ -53,7 +53,7 @@ function Table(options) {
   });
 
   this.key(["right"], function (ch, key) {
-    if (this.selected[1] + 1 == this.rows[this.selected[0]].length) {
+    if (this.selected[1] + 1 == Object.values(this.table.data[this.selected[0]]).length) {
       return;
     }
     this.selected = [this.selected[0], this.selected[1] + 1];
@@ -164,7 +164,8 @@ Table.prototype.setRows = Table.prototype.setData = function (table) {
     //pass
   }
 
-  this.rows = this.rows.slice(this.selected[0], lines + this.selected[0]);
+  let scroll = helper.getScroll(this.selected[0], lines);
+  this.rows = this.rows.slice(scroll[0], scroll[1]);
 
   if (typeof table.headers !== "undefined") {
     this.rows.unshift(table.headers);
