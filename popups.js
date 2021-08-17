@@ -5,7 +5,7 @@ var blessed = require("neo-blessed"),
 const pino = require("pino");
 const logger = pino(pino.destination("/tmp/node.log"));
 const fs = require("fs");
-
+const whois = require("./whois");
 var strings = {};
 var stringsNames = ["ports", "protocols", "queues", "states"];
 
@@ -63,6 +63,11 @@ function handlePopup(screen, column, content) {
       createPopup(textPopup(strings["ports"][content]), screen);
       break;
     case 6:
+      whois.whois(content).then(function (response) {
+        logger.info(content);
+        logger.info(response);
+        createPopup(textPopup(response), screen);
+      });
       break;
     case 7:
       createPopup(textPopup(strings["ports"][content]), screen);
