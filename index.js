@@ -106,12 +106,8 @@ var table = Table({
   top: "0",
   left: "center",
   width: "100%",
-  height: "90%",
-  data: [
-    ["Animals", "Foods"],
-    ["Elephant", "Apple"],
-    ["Bird", "Orange"],
-  ],
+  height: "shrink",
+
   border: {
     type: "line",
   },

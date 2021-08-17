@@ -1,0 +1,4 @@
+{
+    "receiveQueue": "Established: The count of bytes not copied by the user program connected to this socket.\nListening: Since Kernel 2.6.18 this column contains the current syn backlog.",
+    "sendQueue": "Established: The count of bytes not acknowledged by the remote host.\nListening: Since Kernel 2.6.18 this column contains the maximum size of the syn backlog."
+}
