@@ -162,7 +162,11 @@ Table.prototype.setRows = Table.prototype.setData = function (table) {
   } else {
     var rows = [];
     Object.values(table.data).forEach(function (d) {
-      rows.push(Object.values(d));
+      let row = Object.values(d);
+      row.pop();
+      logger.info(d["users"]);
+      row.push(d["users"].text);
+      rows.push(row);
     });
     this.rows = rows;
   }

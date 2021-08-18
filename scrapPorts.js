@@ -1,6 +1,7 @@
 const request = require("request");
 const cheerio = require("cheerio");
-const fs = require('fs');
+const fs = require("fs");
+
 async function scrap() {
   const url = "http://www.iana.org/assignments/service-names-port-numbers/service-names-port-numbers.xml";
 
@@ -10,7 +11,7 @@ async function scrap() {
 
   var result = {};
 
-  console.log("Scraping started.")
+  console.log("Scraping started.");
 
   customHeaderRequest(url, function (error, response, html) {
     if (!error && response.statusCode == 200) {
@@ -25,11 +26,10 @@ async function scrap() {
         }
       });
       let data = JSON.stringify(result);
-      fs.writeFileSync('ports.json', data);
-      console.log("File saved.")
+      fs.writeFileSync("ports.json", data);
+      console.log("File saved.");
     }
   });
-
 }
 
 scrap();

@@ -35,7 +35,7 @@ var table = Table({
   },
 });
 
-ss.ss(screen, table);
+ss(screen, table);
 
 // Append our box to the screen.
 screen.append(table);

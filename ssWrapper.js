@@ -70,19 +70,20 @@ function formatOutput(data) {
 
     connections[i].peerPort = line[5].match(":([0-9]+)")[1];
 
+    connections[i].users = {};
     if (users) {
       usersList = users.match(/(\"[^\"]+\"\,pid=[0-9]+\,fd=[0-9]+)/g);
-      connections[i].users = {};
+
       for (let j = 0; j < usersList.length; j++) {
         connections[i].users[j] = {};
         connections[i].users[j].name = usersList[j].match('"([^"]+)"')[1];
         connections[i].users[j].pid = usersList[j].match("pid=([0-9]+)")[1];
+        connections[i].users.text = "ok";
       }
     } else {
-      connections[i].users = null;
+      connections[i].users.text = "nok";
     }
-    connections[i].users = "test";
   }
 }
 
-module.exports = { ss };
+module.exports = ss;
