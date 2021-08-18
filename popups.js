@@ -30,16 +30,18 @@ function removePopup() {
   if (currentBox != null) {
     screen.remove(currentBox);
     currentBox = null;
-    screen.restoreFocus();
+    screen.rewindFocus();
     screen.render();
   }
 }
 
-function createPopup(popup) {
+function createPopup(popup, escapable = true) {
   currentBox = popup;
-  currentBox.key(["enter", "escape"], function (ch, key) {
-    removePopup(screen);
-  });
+  if (escapable) {
+    currentBox.key(["enter", "escape"], function (ch, key) {
+      removePopup(screen);
+    });
+  }
   screen.append(currentBox);
   screen.render();
   currentBox.focus();
@@ -67,7 +69,9 @@ function handlePopup(mainScreen, column, content) {
       createPopup(textPopup(strings["ports"][content]));
       break;
     case 6:
+      createPopup(textPopup("Wait for Whois..."), false);
       whois.whois(content).then(function (response) {
+        removePopup(screen);
         createPopup(textPopup(response));
       });
       break;
@@ -82,10 +86,10 @@ function handlePopup(mainScreen, column, content) {
 function canShrink(content) {
   let maxShrinkSize = Math.floor((Math.floor(screen.lines.length / 2) - 1) / 2);
   let numberOfLines = content.split(/\r\n|\r|\n/).length;
-  if (numberOfLines >= maxShrinkSize) {
-    return false;
-  } else {
+  if (numberOfLines < maxShrinkSize) {
     return true;
+  } else {
+    return false;
   }
 }
 

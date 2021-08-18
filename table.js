@@ -232,7 +232,6 @@ Table.prototype.setRows = Table.prototype.setData = function (table) {
   this.setContent(text);
   this.align = align;
   this.focus();
-  this.screen.saveFocus();
 };
 
 Table.prototype.render = function () {
