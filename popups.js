@@ -79,6 +79,8 @@ function handlePopup(mainScreen, column, content) {
       createPopup(textPopup(strings["ports"][content]));
       break;
     case 8:
+      logger.info("Select users");
+      usersPopup(content);
       break;
   }
 }
@@ -90,6 +92,22 @@ function canShrink(content) {
     return true;
   } else {
     return false;
+  }
+}
+
+function getUsersText(users) {
+  for (let i = 0; i < Object.keys(users).length - 1; i++) {
+    let name = users[i].name;
+    let pid = users[i].pid;
+    let cmdline = users[i].cmdline;
+    let owner = users[i].owner;
+    logger.info("name" + name);
+    logger.info("pid" + pid);
+    logger.info("cmdline" + cmdline);
+    logger.info("owner" + owner);
+    var status = fs.readFileSync("/proc/" + pid + "/status", "UTF8");
+    var state = status.match(/State:[^\n]+\(([a-z]+)\)/)[1];
+    logger.info("state: " + state);
   }
 }
 
@@ -125,6 +143,10 @@ function textPopup(content) {
       },
     },
   });
+}
+
+function usersPopup(users) {
+  getUsersText(users);
 }
 
 module.exports = { handlePopup, focusPopup };

@@ -1,5 +1,7 @@
 const { spawn } = require("child_process");
-var os = require("os");
+const exec = require("child_process").exec;
+const os = require("os");
+const fs = require("fs");
 
 var cmdOutput = "";
 
@@ -78,10 +80,31 @@ function formatOutput(data) {
         connections[i].users[j] = {};
         connections[i].users[j].name = usersList[j].match('"([^"]+)"')[1];
         connections[i].users[j].pid = usersList[j].match("pid=([0-9]+)")[1];
-        connections[i].users.text = "ok";
+        fs.readFile(
+          "/proc/" + connections[i].users[j].pid + "/cmdline",
+          "UTF8",
+          function (err, data) {
+            if (err) {
+              throw err;
+            }
+            data = data.split("\0").join(" ");
+            connections[i].users[j].cmdline = data;
+          }
+        );
+
+        exec(
+          "ps -o user= -p " + connections[i].users[j].pid,
+          (err, stdout, stderr) =>
+            (connections[i].users[j].owner = stdout.trim())
+        );
+      }
+      if (usersList.length == 1) {
+        connections[i].users.text = connections[i].users[0].name;
+      } else {
+        connections[i].users.text = usersList.length + " users";
       }
     } else {
-      connections[i].users.text = "nok";
+      connections[i].users.text = "";
     }
   }
 }

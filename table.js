@@ -55,7 +55,10 @@ function Table(options) {
   });
 
   this.key(["right"], function (ch, key) {
-    if (this.selected[1] + 1 == Object.values(this.table.data[this.selected[0]]).length) {
+    if (
+      this.selected[1] + 1 ==
+      Object.values(this.table.data[this.selected[0]]).length
+    ) {
       return;
     }
     this.selected = [this.selected[0], this.selected[1] + 1];
@@ -85,13 +88,22 @@ function Table(options) {
 
   this.key(["s"], function (ch, key) {
     this.table.data = helper.sortBy(this.selected[1], this.table.data);
-    this.selected = [helper.retrieveSocket(this.currentSocket, this.table.data, this.selected[0]), this.selected[1]];
+    this.selected = [
+      helper.retrieveSocket(
+        this.currentSocket,
+        this.table.data,
+        this.selected[0]
+      ),
+      this.selected[1],
+    ];
     this.setData(this.table);
     self.screen.render();
   });
 
   this.key(["enter"], function (ch, key) {
-    let content = Object.values(this.table.data[this.selected[0]])[this.selected[1]];
+    let content = Object.values(this.table.data[this.selected[0]])[
+      this.selected[1]
+    ];
     popups.handlePopup(this.screen, this.selected[1], content);
   });
 }
@@ -164,7 +176,6 @@ Table.prototype.setRows = Table.prototype.setData = function (table) {
     Object.values(table.data).forEach(function (d) {
       let row = Object.values(d);
       row.pop();
-      logger.info(d["users"]);
       row.push(d["users"].text);
       rows.push(row);
     });
