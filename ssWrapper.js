@@ -55,7 +55,39 @@ function formatAddress(line) {
     port = line.match(":([0-9]+)")[1];
   }
 
-  return [address, port];
+  return [address.trim(), port.trim()];
+}
+
+function formatUsers(i, users) {
+  connections[i].users = {};
+  if (users) {
+    usersList = users.match(/(\"[^\"]+\"\,pid=[0-9]+\,fd=[0-9]+)/g);
+
+    for (let j = 0; j < usersList.length; j++) {
+      connections[i].users[j] = {};
+      connections[i].users[j].name = usersList[j].match('"([^"]+)"')[1];
+      connections[i].users[j].pid = usersList[j].match("pid=([0-9]+)")[1];
+      fs.readFile("/proc/" + connections[i].users[j].pid + "/cmdline", "UTF8", function (err, data) {
+        if (err) {
+          throw err;
+        }
+        data = data.split("\0").join(" ");
+        connections[i].users[j].cmdline = data;
+      });
+
+      exec(
+        "ps -o user= -p " + connections[i].users[j].pid,
+        (err, stdout, stderr) => (connections[i].users[j].owner = stdout.trim())
+      );
+    }
+    if (usersList.length == 1) {
+      connections[i].users.text = connections[i].users[0].name;
+    } else {
+      connections[i].users.text = usersList.length + " users";
+    }
+  } else {
+    connections[i].users.text = "";
+  }
 }
 
 function formatOutput(data) {
@@ -77,42 +109,14 @@ function formatOutput(data) {
     }
 
     connections[i] = {};
-    connections[i].protocol = line[0];
-    connections[i].state = line[1];
-    connections[i].receiveQueue = line[2];
-    connections[i].send = line[3];
+    connections[i].protocol = line[0].trim();
+    connections[i].state = line[1].trim();
+    connections[i].receiveQueue = line[2].trim();
+    connections[i].sendQueue = line[3].trim();
     [connections[i].localAddress, connections[i].localPort] = formatAddress(line[4]);
     [connections[i].peerAddress, connections[i].peerPort] = formatAddress(line[5]);
 
-    connections[i].users = {};
-    if (users) {
-      usersList = users.match(/(\"[^\"]+\"\,pid=[0-9]+\,fd=[0-9]+)/g);
-
-      for (let j = 0; j < usersList.length; j++) {
-        connections[i].users[j] = {};
-        connections[i].users[j].name = usersList[j].match('"([^"]+)"')[1];
-        connections[i].users[j].pid = usersList[j].match("pid=([0-9]+)")[1];
-        fs.readFile("/proc/" + connections[i].users[j].pid + "/cmdline", "UTF8", function (err, data) {
-          if (err) {
-            throw err;
-          }
-          data = data.split("\0").join(" ");
-          connections[i].users[j].cmdline = data;
-        });
-
-        exec(
-          "ps -o user= -p " + connections[i].users[j].pid,
-          (err, stdout, stderr) => (connections[i].users[j].owner = stdout.trim())
-        );
-      }
-      if (usersList.length == 1) {
-        connections[i].users.text = connections[i].users[0].name;
-      } else {
-        connections[i].users.text = usersList.length + " users";
-      }
-    } else {
-      connections[i].users.text = "";
-    }
+    formatUsers(i, users);
   }
 }
 

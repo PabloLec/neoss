@@ -79,8 +79,7 @@ function handlePopup(mainScreen, column, content) {
       createPopup(textPopup(strings["ports"][content]));
       break;
     case 8:
-      logger.info("Select users");
-      usersPopup(content);
+      createPopup(usersPopup(content));
       break;
   }
 }
@@ -92,22 +91,6 @@ function canShrink(content) {
     return true;
   } else {
     return false;
-  }
-}
-
-function getUsersText(users) {
-  for (let i = 0; i < Object.keys(users).length - 1; i++) {
-    let name = users[i].name;
-    let pid = users[i].pid;
-    let cmdline = users[i].cmdline;
-    let owner = users[i].owner;
-    logger.info("name" + name);
-    logger.info("pid" + pid);
-    logger.info("cmdline" + cmdline);
-    logger.info("owner" + owner);
-    var status = fs.readFileSync("/proc/" + pid + "/status", "UTF8");
-    var state = status.match(/State:[^\n]+\(([a-z]+)\)/)[1];
-    logger.info("state: " + state);
   }
 }
 
@@ -145,8 +128,29 @@ function textPopup(content) {
   });
 }
 
+function getUsersText(users) {
+  text = "";
+  length = Object.keys(users).length - 1;
+  logger.info("" + length);
+  for (let i = 0; i < length; i++) {
+    if (length > 1) {
+      text += "{bold} - - User " + (i + 1) + " - -{/bold}\n";
+    }
+    text += "Name: " + users[i].name + "\n";
+    text += "PID: " + users[i].pid + "\n";
+    text += "Owner: " + users[i].owner + "\n";
+    text += "Command: " + users[i].cmdline.trim() + "\n";
+    if (i < length - 1) {
+      text += "\n\n";
+    }
+  }
+
+  return text;
+}
+
 function usersPopup(users) {
-  getUsersText(users);
+  let text = getUsersText(users);
+  return textPopup(text);
 }
 
 module.exports = { handlePopup, focusPopup };
