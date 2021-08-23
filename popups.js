@@ -35,8 +35,11 @@ function removePopup() {
   }
 }
 
-function createPopup(popup, escapable = true) {
-  currentBox = popup;
+function createPopup(content, escapable = true) {
+  if (content == null) {
+    return;
+  }
+  currentBox = createBox(content);
   if (escapable) {
     currentBox.key(["enter", "escape"], function (ch, key) {
       removePopup(screen);
@@ -52,34 +55,34 @@ function handlePopup(mainScreen, column, content) {
 
   switch (column) {
     case 0:
-      createPopup(textPopup(strings["protocols"][content]));
+      createPopup(strings["protocols"][content]);
       break;
     case 1:
-      createPopup(textPopup(strings["states"][content]));
+      createPopup(strings["states"][content]);
       break;
     case 2:
-      createPopup(textPopup(strings["queues"]["receiveQueue"]));
+      createPopup(strings["queues"]["receiveQueue"]);
       break;
     case 3:
-      createPopup(textPopup(strings["queues"]["sendQueue"]));
+      createPopup(strings["queues"]["sendQueue"]);
       break;
     case 4:
       break;
     case 5:
-      createPopup(textPopup(strings["ports"][content]));
+      createPopup(getPortText(content));
       break;
     case 6:
-      createPopup(textPopup("Wait for Whois..."), false);
+      createPopup("Wait for Whois...", false);
       whois.whois(content).then(function (response) {
         removePopup(screen);
-        createPopup(textPopup(response));
+        createPopup(response);
       });
       break;
     case 7:
-      createPopup(textPopup(strings["ports"][content]));
+      createPopup(getPortText(content));
       break;
     case 8:
-      createPopup(usersPopup(content));
+      createPopup(getUsersText(content));
       break;
   }
 }
@@ -94,7 +97,7 @@ function canShrink(content) {
   }
 }
 
-function textPopup(content) {
+function createBox(content) {
   let height = "50%";
   let scrollable = true;
   if (canShrink(content)) {
@@ -117,15 +120,23 @@ function textPopup(content) {
     },
     style: {
       fg: "white",
-      bg: "magenta",
       border: {
         fg: "#f0f0f0",
       },
-      hover: {
-        bg: "green",
-      },
     },
   });
+}
+
+function getPortText(port) {
+  let assignment = strings["ports"][port];
+  if (assignment == undefined) {
+    return "This port is not assigned";
+  }
+
+  let text = "{bold}This port is assigned to:{/bold} " + assignment + "\n";
+  text += "Note that regardless of a port assignment, it can be used in any way.";
+
+  return text;
 }
 
 function getUsersText(users) {
@@ -136,21 +147,16 @@ function getUsersText(users) {
     if (length > 1) {
       text += "{bold} - - User " + (i + 1) + " - -{/bold}\n";
     }
-    text += "Name: " + users[i].name + "\n";
-    text += "PID: " + users[i].pid + "\n";
-    text += "Owner: " + users[i].owner + "\n";
-    text += "Command: " + users[i].cmdline.trim() + "\n";
+    text += "{bold}Name:{/bold} " + users[i].name + "\n";
+    text += "{bold}PID:{/bold} " + users[i].pid + "\n";
+    text += "{bold}Owner:{/bold} " + users[i].owner + "\n";
+    text += "{bold}Command:{/bold} " + users[i].cmdline.trim() + "\n";
     if (i < length - 1) {
       text += "\n\n";
     }
   }
 
   return text;
-}
-
-function usersPopup(users) {
-  let text = getUsersText(users);
-  return textPopup(text);
 }
 
 module.exports = { handlePopup, focusPopup };

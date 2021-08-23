@@ -19,18 +19,17 @@ var table = Table({
   left: "center",
   width: "100%",
   height: "shrink",
-
   border: {
     type: "line",
   },
+
   style: {
     fg: "white",
-    bg: "magenta",
     border: {
-      fg: "#f0f0f0",
+      fg: "white",
     },
-    hover: {
-      bg: "green",
+    focus: {
+      bg: "white",
     },
   },
 });
