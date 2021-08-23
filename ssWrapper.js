@@ -43,6 +43,21 @@ const ss = (screen, table) => {
   });
 };
 
+function formatAddress(line) {
+  var address;
+  var port;
+  if (line.match(/(\[::ffff)/)) {
+    // Handle IPv4 addresses expressed in IPv6 notation.
+    address = line.match("([0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3})")[1];
+    port = line.match(":([0-9]+)$")[1];
+  } else {
+    address = line.match("([^:]+):")[1];
+    port = line.match(":([0-9]+)")[1];
+  }
+
+  return [address, port];
+}
+
 function formatOutput(data) {
   let outputLines = data.split(os.EOL);
   for (let i = 0; i < outputLines.length; i++) {
@@ -66,11 +81,8 @@ function formatOutput(data) {
     connections[i].state = line[1];
     connections[i].receiveQueue = line[2];
     connections[i].send = line[3];
-    connections[i].localAddress = line[4].match("([^:]+):")[1];
-    connections[i].localPort = line[4].match(":([0-9]+)")[1];
-    connections[i].peerAddress = line[5].match("([^:]+):")[1];
-
-    connections[i].peerPort = line[5].match(":([0-9]+)")[1];
+    [connections[i].localAddress, connections[i].localPort] = formatAddress(line[4]);
+    [connections[i].peerAddress, connections[i].peerPort] = formatAddress(line[5]);
 
     connections[i].users = {};
     if (users) {
@@ -80,22 +92,17 @@ function formatOutput(data) {
         connections[i].users[j] = {};
         connections[i].users[j].name = usersList[j].match('"([^"]+)"')[1];
         connections[i].users[j].pid = usersList[j].match("pid=([0-9]+)")[1];
-        fs.readFile(
-          "/proc/" + connections[i].users[j].pid + "/cmdline",
-          "UTF8",
-          function (err, data) {
-            if (err) {
-              throw err;
-            }
-            data = data.split("\0").join(" ");
-            connections[i].users[j].cmdline = data;
+        fs.readFile("/proc/" + connections[i].users[j].pid + "/cmdline", "UTF8", function (err, data) {
+          if (err) {
+            throw err;
           }
-        );
+          data = data.split("\0").join(" ");
+          connections[i].users[j].cmdline = data;
+        });
 
         exec(
           "ps -o user= -p " + connections[i].users[j].pid,
-          (err, stdout, stderr) =>
-            (connections[i].users[j].owner = stdout.trim())
+          (err, stdout, stderr) => (connections[i].users[j].owner = stdout.trim())
         );
       }
       if (usersList.length == 1) {
