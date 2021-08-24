@@ -95,6 +95,7 @@ function Table(options) {
     let content = Object.values(this.table.data[this.selected[0]])[this.selected[1]];
     popups.handlePopup(this.screen, this.selected[1], content);
   });
+
   this.key(["r", "R"], function (ch, key) {
     ss(this.screen, this);
   });

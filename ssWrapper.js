@@ -2,7 +2,10 @@ const { spawn } = require("child_process");
 const exec = require("child_process").exec;
 const os = require("os");
 const fs = require("fs");
+const helper = require("./helper");
 const popups = require("./popups");
+const pino = require("pino");
+const logger = pino(pino.destination("/tmp/node.log"));
 
 var cmdOutput;
 var connections;
@@ -45,6 +48,11 @@ const ss = (screen, table) => {
     });
     table.focus();
     popups.removePopup();
+    table.selected = [
+      helper.retrieveSocket(table.currentSocket, table.table.data, table.selected[0]),
+      table.selected[1],
+    ];
+    table.setData(table.table);
     screen.render();
   });
 };
