@@ -22,19 +22,18 @@ const ss = (screen, table) => {
   });
 
   process.on("close", (code) => {
-    //console.log(`child process exited with code ${code}`);
     formatOutput(cmdOutput);
     table.setData({
       headers: [
-        "protocol",
-        "state",
-        "receiveQueue",
-        "sendQueue",
-        "localAddress",
-        "localPort",
-        "peerAddress",
-        "peerPort",
-        "users",
+        "Protocol",
+        "State",
+        "Receive Queue",
+        "Send Queue",
+        "Local Address",
+        "Local Port",
+        "Peer Address",
+        "Peer Port",
+        "Users",
       ],
       data: connections,
       colWidth: [5, 5, 5, 5, 20, 10, 20, 10, 10, 10],
@@ -86,7 +85,7 @@ function formatUsers(i, users) {
       connections[i].users.text = usersList.length + " users";
     }
   } else {
-    connections[i].users.text = "";
+    connections[i].users.text = "/";
   }
 }
 

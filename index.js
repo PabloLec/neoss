@@ -4,12 +4,11 @@ const pino = require("pino");
 const logger = pino(pino.destination("/tmp/node.log"));
 const ss = require("./ssWrapper");
 
-// Create a screen object.
 var screen = blessed.screen({
   smartCSR: true,
 });
 
-screen.title = "my window title";
+screen.title = "neoss";
 
 var table = Table({
   keys: true,
@@ -22,29 +21,22 @@ var table = Table({
   border: {
     type: "line",
   },
-
   style: {
     fg: "white",
     border: {
       fg: "white",
     },
     focus: {
-      bg: "white",
+      bg: "blue",
     },
   },
 });
 
 ss(screen, table);
-
-// Append our box to the screen.
 screen.append(table);
-
-// Quit on Escape, q, or Control-C.
 screen.key(["escape", "q", "C-c"], function (ch, key) {
   return process.exit(0);
 });
 
 table.focus();
-
-// Render the screen.
 screen.render();

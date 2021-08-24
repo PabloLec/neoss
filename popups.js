@@ -113,7 +113,7 @@ function createBox(content) {
     scrollable: scrollable,
     alwaysScroll: true,
     keys: true,
-    content: content,
+    content: content.trim(),
     tags: true,
     border: {
       type: "line",
@@ -140,9 +140,12 @@ function getPortText(port) {
 }
 
 function getUsersText(users) {
+  if (users.text == "/") {
+    return null;
+  }
+
   text = "";
   length = Object.keys(users).length - 1;
-  logger.info("" + length);
   for (let i = 0; i < length; i++) {
     if (length > 1) {
       text += "{bold} - - User " + (i + 1) + " - -{/bold}\n";

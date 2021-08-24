@@ -55,10 +55,7 @@ function Table(options) {
   });
 
   this.key(["right"], function (ch, key) {
-    if (
-      this.selected[1] + 1 ==
-      Object.values(this.table.data[this.selected[0]]).length
-    ) {
+    if (this.selected[1] + 1 == Object.values(this.table.data[this.selected[0]]).length) {
       return;
     }
     this.selected = [this.selected[0], this.selected[1] + 1];
@@ -88,22 +85,13 @@ function Table(options) {
 
   this.key(["s"], function (ch, key) {
     this.table.data = helper.sortBy(this.selected[1], this.table.data);
-    this.selected = [
-      helper.retrieveSocket(
-        this.currentSocket,
-        this.table.data,
-        this.selected[0]
-      ),
-      this.selected[1],
-    ];
+    this.selected = [helper.retrieveSocket(this.currentSocket, this.table.data, this.selected[0]), this.selected[1]];
     this.setData(this.table);
     self.screen.render();
   });
 
   this.key(["enter"], function (ch, key) {
-    let content = Object.values(this.table.data[this.selected[0]])[
-      this.selected[1]
-    ];
+    let content = Object.values(this.table.data[this.selected[0]])[this.selected[1]];
     popups.handlePopup(this.screen, this.selected[1], content);
   });
 }
@@ -184,7 +172,7 @@ Table.prototype.setRows = Table.prototype.setData = function (table) {
 
   try {
     this.rows[this.selected[0]][this.selected[1]] =
-      "{red-fg}" + this.rows[this.selected[0]][this.selected[1]] + "{/red-fg}";
+      "{blue-bg}{bold}" + this.rows[this.selected[0]][this.selected[1]] + "{/bold}{/blue-bg}";
   } catch (TypeError) {
     //pass
   }

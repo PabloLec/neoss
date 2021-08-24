@@ -43,6 +43,10 @@ function sortBy(column, data) {
       data.sort((a, b) => (parseInt(a[key]) > parseInt(b[key]) ? 1 : -1));
     } else if (!ascending && numeric) {
       data.sort((a, b) => (parseInt(a[key]) < parseInt(b[key]) ? 1 : -1));
+    } else if (key == "users" && ascending) {
+      data.sort((a, b) => (a[key].text > b[key].text ? 1 : -1));
+    } else if (key == "users") {
+      data.sort((a, b) => (a[key].text < b[key].text ? 1 : -1));
     } else if (ascending) {
       data.sort((a, b) => (a[key] > b[key] ? 1 : -1));
     } else {
