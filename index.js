@@ -29,14 +29,14 @@ var table = Table({
     focus: {
       bg: "blue",
     },
+    header: {
+      fg: "black",
+      bg: "white",
+    },
   },
 });
 
 ss(screen, table);
-screen.append(table);
 screen.key(["escape", "q", "C-c"], function (ch, key) {
   return process.exit(0);
 });
-
-table.focus();
-screen.render();

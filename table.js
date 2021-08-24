@@ -5,6 +5,7 @@ var blessed = require("neo-blessed"),
 
 const helper = require("./helper");
 const popups = require("./popups");
+const ss = require("./ssWrapper");
 const pino = require("pino");
 const logger = pino(pino.destination("/tmp/node.log"));
 
@@ -93,6 +94,9 @@ function Table(options) {
   this.key(["enter"], function (ch, key) {
     let content = Object.values(this.table.data[this.selected[0]])[this.selected[1]];
     popups.handlePopup(this.screen, this.selected[1], content);
+  });
+  this.key(["r", "R"], function (ch, key) {
+    ss(this.screen, this);
   });
 }
 

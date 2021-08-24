@@ -2,13 +2,17 @@ const { spawn } = require("child_process");
 const exec = require("child_process").exec;
 const os = require("os");
 const fs = require("fs");
+const popups = require("./popups");
 
-var cmdOutput = "";
-
-var connections = [];
+var cmdOutput;
+var connections;
 
 const ss = (screen, table) => {
   let process = spawn("ss", ["-OHrtupn"]);
+  cmdOutput = "";
+  connections = [];
+  popups.loadingPopup(screen);
+
   process.stdout.on("data", (data) => {
     cmdOutput += data;
   });
@@ -23,6 +27,7 @@ const ss = (screen, table) => {
 
   process.on("close", (code) => {
     formatOutput(cmdOutput);
+    screen.append(table);
     table.setData({
       headers: [
         "Protocol",
@@ -38,6 +43,8 @@ const ss = (screen, table) => {
       data: connections,
       colWidth: [5, 5, 5, 5, 20, 10, 20, 10, 10, 10],
     });
+    table.focus();
+    popups.removePopup();
     screen.render();
   });
 };

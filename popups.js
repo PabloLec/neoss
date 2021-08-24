@@ -162,4 +162,9 @@ function getUsersText(users) {
   return text;
 }
 
-module.exports = { handlePopup, focusPopup };
+function loadingPopup(mainScreen) {
+  screen = mainScreen;
+  createPopup("Loading{blink}...{/blink}", false);
+}
+
+module.exports = { handlePopup, focusPopup, loadingPopup, removePopup };
