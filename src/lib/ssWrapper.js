@@ -3,10 +3,8 @@ const exec = require("child_process").exec;
 const os = require("os");
 const fs = require("fs");
 const dns = require("dns");
-const helper = require("./helper");
-const popups = require("./popups");
-const pino = require("pino");
-const logger = pino(pino.destination("/tmp/node.log"));
+const helper = require("src/lib/helper");
+const popups = require("src/ui/popups");
 
 var cmdOutput;
 var connections;
@@ -49,7 +47,6 @@ const ss = (mainScreen, mainTable) => {
         "Users",
       ],
       data: connections,
-      colWidth: [5, 5, 5, 5, 20, 10, 20, 10, 10, 10],
     });
     table.focus();
     popups.removePopup();

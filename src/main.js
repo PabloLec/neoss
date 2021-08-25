@@ -1,16 +1,15 @@
-var blessed = require("neo-blessed");
-var Table = require("./table");
-const pino = require("pino");
-const logger = pino(pino.destination("/tmp/node.log"));
-const ss = require("./ssWrapper");
+require("app-module-path").addPath(`${__dirname}/app`);
+const blessed = require("neo-blessed");
+const Table = require.main.require("src/ui/table");
+const ss = require("src/lib/ssWrapper");
 
-var screen = blessed.screen({
+const screen = blessed.screen({
   smartCSR: true,
 });
 
 screen.title = "neoss";
 
-var table = Table({
+const table = Table({
   keys: true,
   interactive: true,
   tags: true,

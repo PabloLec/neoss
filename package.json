@@ -1,20 +1,30 @@
 {
-  "name": "netwatch",
-  "version": "0.0.1",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "author": "",
-  "license": "ISC",
-  "dependencies": {
-    "blessed": "^0.1.81",
-    "neo-blessed": "^0.2.0",
-    "blessed-contrib": "^4.10.0",
-    "whois": "^2.13.5",
-    "whois-json": "^2.0.4",
-    "pino": "^6.13.0",
-    "cheerio": "^1.0.0-rc.10"
-  }
+   "name": "neoss",
+   "author": {
+      "name": "PabloLec",
+      "email": "pablolec@pm.me",
+      "url": "https://github.com/PabloLec"
+   },
+   "version": "0.0.1",
+   "description": "",
+   "main": "src/main.js",
+   "license": "BSD 3-Clause License",
+   "keywords": [
+      "ss",
+      "socket statistic",
+      "ports",
+      "network"
+   ],
+   "repository": "github:PabloLec/neoss",
+   "dependencies": {
+      "app-module-path": "^2.2.0",
+      "blessed": "^0.1.81",
+      "neo-blessed": "^0.2.0",
+      "src": "file:./src",
+      "whois-json": "^2.0.4"
+   },
+   "devDependencies": {
+      "cheerio": "^1.0.0-rc.10",
+      "pino": "^6.13.0"
+   }
 }

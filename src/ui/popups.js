@@ -1,18 +1,15 @@
-var blessed = require("neo-blessed"),
+const blessed = require("neo-blessed"),
   Node = blessed.Node,
   Box = blessed.Box;
-
-const pino = require("pino");
-const logger = pino(pino.destination("/tmp/node.log"));
 const fs = require("fs");
-const whois = require("./whois");
+const whois = require("src/lib/whois");
 
 var strings = {};
-var stringsNames = ["ports", "protocols", "queues", "states"];
+const stringsNames = ["ports", "protocols", "queues", "states"];
 var screen;
 
 stringsNames.forEach(function (name) {
-  fs.readFile("strings/" + name + ".json", (err, data) => {
+  fs.readFile("src/strings/" + name + ".json", (err, data) => {
     if (err) throw err;
     strings[name] = JSON.parse(data);
   });
@@ -134,7 +131,8 @@ function getPortText(port) {
   }
 
   let text = "{bold}This port is assigned to:{/bold} " + assignment + "\n";
-  text += "Note that regardless of a port assignment, it can be used in any way.";
+  text +=
+    "Note that regardless of a port assignment, it can be used in any way.";
 
   return text;
 }
