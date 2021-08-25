@@ -2,6 +2,7 @@ const { spawn } = require("child_process");
 const exec = require("child_process").exec;
 const os = require("os");
 const fs = require("fs");
+const dns = require("dns");
 const helper = require("./helper");
 const popups = require("./popups");
 const pino = require("pino");
@@ -9,9 +10,13 @@ const logger = pino(pino.destination("/tmp/node.log"));
 
 var cmdOutput;
 var connections;
+var screen;
+var table;
 
-const ss = (screen, table) => {
-  let process = spawn("ss", ["-OHrtupn"]);
+const ss = (mainScreen, mainTable) => {
+  screen = mainScreen;
+  table = mainTable;
+  let process = spawn("ss", ["-OHtupn"]);
   cmdOutput = "";
   connections = [];
   popups.loadingPopup(screen);
@@ -49,7 +54,11 @@ const ss = (screen, table) => {
     table.focus();
     popups.removePopup();
     table.selected = [
-      helper.retrieveSocket(table.currentSocket, table.table.data, table.selected[0]),
+      helper.retrieveSocket(
+        table.currentSocket,
+        table.table.data,
+        table.selected[0]
+      ),
       table.selected[1],
     ];
     table.setData(table.table);
@@ -60,9 +69,13 @@ const ss = (screen, table) => {
 function formatAddress(line) {
   var address;
   var port;
-  if (line.match(/(\[::ffff)/)) {
-    // Handle IPv4 addresses expressed in IPv6 notation.
+  if (line.match(/(\[::ffff:)/)) {
+    // IPv4 addresses expressed in IPv6 notation.
     address = line.match("([0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3})")[1];
+    port = line.match(":([0-9]+)$")[1];
+  } else if (line.match(/(\[::1)/)) {
+    // IPv6 loopback
+    address = "127.0.0.1";
     port = line.match(":([0-9]+)$")[1];
   } else {
     address = line.match("([^:]+):")[1];
@@ -81,13 +94,19 @@ function formatUsers(i, users) {
       connections[i].users[j] = {};
       connections[i].users[j].name = usersList[j].match('"([^"]+)"')[1];
       connections[i].users[j].pid = usersList[j].match("pid=([0-9]+)")[1];
-      fs.readFile("/proc/" + connections[i].users[j].pid + "/cmdline", "UTF8", function (err, data) {
-        if (err) {
-          throw err;
+      fs.readFile(
+        "/proc/" + connections[i].users[j].pid + "/cmdline",
+        "UTF8",
+        function (err, data) {
+          if (err) {
+            connections[i].users[j].cmdline =
+              "Unable to retrieve cmdline. Process already terminated.";
+          } else {
+            data = data.split("\0").join(" ");
+            connections[i].users[j].cmdline = data;
+          }
         }
-        data = data.split("\0").join(" ");
-        connections[i].users[j].cmdline = data;
-      });
+      );
 
       exec(
         "ps -o user= -p " + connections[i].users[j].pid,
@@ -102,6 +121,21 @@ function formatUsers(i, users) {
   } else {
     connections[i].users.text = "/";
   }
+}
+
+function reverseLookup(i) {
+  dns.reverse(
+    connections[i].peerAddress,
+    (callback = (err, result) => {
+      if (!err) {
+        if (result.length > 0) {
+          connections[i].peerAddress = result[0];
+          table.setData(table.table);
+          screen.render();
+        }
+      }
+    })
+  );
 }
 
 function formatOutput(data) {
@@ -127,10 +161,15 @@ function formatOutput(data) {
     connections[i].state = line[1].trim();
     connections[i].receiveQueue = line[2].trim();
     connections[i].sendQueue = line[3].trim();
-    [connections[i].localAddress, connections[i].localPort] = formatAddress(line[4]);
-    [connections[i].peerAddress, connections[i].peerPort] = formatAddress(line[5]);
+    [connections[i].localAddress, connections[i].localPort] = formatAddress(
+      line[4]
+    );
+    [connections[i].peerAddress, connections[i].peerPort] = formatAddress(
+      line[5]
+    );
 
     formatUsers(i, users);
+    reverseLookup(i);
   }
 }
 
