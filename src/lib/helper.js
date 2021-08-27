@@ -1,6 +1,14 @@
 var lastSort;
 var lastScroll;
 
+/**
+ * Tries to retrieve previously selected line on a refreshed table.
+ *
+ * @param  {Object} socket - Socket object
+ * @param  {Array} data - Array of lines displayed on the screen
+ * @param  {int} currentIndex - Current index, returned if unsuccessful
+ * @return {int} - Index to be selected
+ */
 function retrieveSocket(socket, data, currentIndex) {
   if (socket == null) {
     return currentIndex;
@@ -26,6 +34,13 @@ function retrieveSocket(socket, data, currentIndex) {
   return currentIndex;
 }
 
+/**
+ * Handles column based sort.
+ *
+ * @param  {int} column - Currently selected column to determine content type
+ * @param  {Array} data - Array of lines
+ * @return {Array} - Sorted array of lines
+ */
 function sortBy(column, data) {
   if (lastSort == column) {
     ascending = false;
@@ -84,6 +99,13 @@ function sortBy(column, data) {
   return data;
 }
 
+/**
+ * Get lines index range to be displayed on scroll.
+ *
+ * @param  {int} row - Selected line index
+ * @param  {Array} screenLines - Complete array of table lines
+ * @return {[int, int]} - Lines index range to be displayed
+ */
 function getScroll(row, screenLines) {
   if (lastScroll === undefined) {
     lastScroll = [0, screenLines - 1];

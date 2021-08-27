@@ -1,5 +1,11 @@
 const whoisJson = require("whois-json");
 
+/**
+ * Converts whois object to string.
+ *
+ * @param  {Object} data - Whois object
+ * @return {string} - Result text
+ */
 function toString(data) {
   text = "";
   for (const key in data) {
@@ -8,6 +14,12 @@ function toString(data) {
   return text;
 }
 
+/**
+ * Performs a whois on given domain/IP
+ *
+ * @param  {string} domain - Domain/IP to be searched
+ * @return {string} - Result text
+ */
 async function whois(domain) {
   var domainName = domain.split(".");
 

@@ -4,10 +4,12 @@ const blessed = require("neo-blessed"),
 const fs = require("fs");
 const whois = require("src/lib/whois");
 
+var screen;
+var currentBox = null;
 var strings = {};
 const stringsNames = ["ports", "protocols", "queues", "states"];
-var screen;
 
+// Load strings
 stringsNames.forEach(function (name) {
   fs.readFile("src/strings/" + name + ".json", (err, data) => {
     if (err) throw err;
@@ -15,23 +17,34 @@ stringsNames.forEach(function (name) {
   });
 });
 
-var currentBox = null;
-
+/**
+ * If a popup exists in currentBox var, focus it.
+ */
 function focusPopup() {
   if (currentBox != null) {
     currentBox.focus();
   }
 }
 
+/**
+ * Removes popup currently stored in currentBox var and returns focus to main table.
+ */
 function removePopup() {
-  if (currentBox != null) {
-    screen.remove(currentBox);
-    currentBox = null;
-    screen.rewindFocus();
-    screen.render();
+  if (currentBox == null) {
+    return;
   }
+  screen.remove(currentBox);
+  currentBox = null;
+  screen.rewindFocus();
+  screen.render();
 }
 
+/**
+ * Stores a blessed box in currentBox var and adds keybindings.
+ *
+ * @param  {string} content - Text content
+ * @param  {boolean} escapable=true - Is popup escapable with keys
+ */
 function createPopup(content, escapable = true) {
   if (content == null) {
     return;
@@ -47,6 +60,13 @@ function createPopup(content, escapable = true) {
   currentBox.focus();
 }
 
+/**
+ * Handles popup creation event according to selected table cell.
+ *
+ * @param  {blessed.screen} mainScreen - Blessed screen object
+ * @param  {int} column - Column number to determine content type
+ * @param  {string} content - Table cell content
+ */
 function handlePopup(mainScreen, column, content) {
   screen = mainScreen;
 
@@ -71,7 +91,7 @@ function handlePopup(mainScreen, column, content) {
     case 6:
       createPopup("Wait for Whois...", false);
       whois.whois(content).then(function (response) {
-        removePopup(screen);
+        removePopup();
         createPopup(response);
       });
       break;
@@ -84,6 +104,12 @@ function handlePopup(mainScreen, column, content) {
   }
 }
 
+/**
+ * Determines if the content is longer than half of screen height. If so, the popup can shrink.
+ *
+ * @param  {string} content - Text content
+ * @return {boolean} - Popup can and must shrink
+ */
 function canShrink(content) {
   let maxShrinkSize = Math.floor((Math.floor(screen.lines.length / 2) - 1) / 2);
   let numberOfLines = content.split(/\r\n|\r|\n/).length;
@@ -94,6 +120,12 @@ function canShrink(content) {
   }
 }
 
+/**
+ * Creates a blessed Box object with given content.
+ *
+ * @param  {string} content - Text content
+ * @return {blessed.box} - Created blessed Box object
+ */
 function createBox(content) {
   let height = "50%";
   let scrollable = true;
@@ -124,6 +156,12 @@ function createBox(content) {
   });
 }
 
+/**
+ * Get popup text content for ports.
+ *
+ * @param  {string} port - Port number
+ * @returns {string} - Popup text content
+ */
 function getPortText(port) {
   let assignment = strings["ports"][port];
   if (assignment == undefined) {
@@ -131,12 +169,17 @@ function getPortText(port) {
   }
 
   let text = "{bold}This port is assigned to:{/bold} " + assignment + "\n";
-  text +=
-    "Note that regardless of a port assignment, it can be used in any way.";
+  text += "Note that regardless of a port assignment, it can be used in any way.";
 
   return text;
 }
 
+/**
+ * Get popup text content for users.
+ *
+ * @param  {Object} users - Users object
+ * @returns {string} - Popup text content
+ */
 function getUsersText(users) {
   if (users.text == "/") {
     return null;
@@ -160,6 +203,11 @@ function getUsersText(users) {
   return text;
 }
 
+/**
+ * Displays loading popup.
+ *
+ * @param  {blessed.screen} mainScreen - Main screen object to display popup on
+ */
 function loadingPopup(mainScreen) {
   screen = mainScreen;
   createPopup("Loading{blink}...{/blink}", false);
