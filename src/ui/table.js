@@ -167,11 +167,13 @@ Table.prototype.setRows = Table.prototype.setData = function (table) {
     var rows = [];
     Object.values(table.data).forEach(function (d) {
       let row = Object.values(d);
-      row.pop();
-      row.push(d["users"].text);
+      delete row[8];
+      delete row[9];
+      row[8] = d["users"].text;
       rows.push(row);
     });
     this.rows = rows;
+    console.log(rows);
   }
 
   try {

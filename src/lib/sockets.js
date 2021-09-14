@@ -1,7 +1,6 @@
 const fs = require("fs");
-const { resolve } = require("path");
 
-var sockets = { tcp: {}, udp: {}, tcp6: {}, udp6: {} };
+var sockets = {};
 
 async function getSockets() {
   var promises = [];
@@ -30,17 +29,27 @@ function parseSockets(data, type) {
     }
     let elements = line.trim().split(/\s+/);
     let inode = elements[9];
-    sockets[type][inode] = {};
+
+    sockets[inode] = {};
+    sockets[inode].protocol = type.slice(0, 3);
+    sockets[inode].state = formatState(elements[3]);
+    [sockets[inode].receiveQueue, sockets[inode].sendQueue] = formatRxTx(elements[4]);
+
     if (type.includes("6")) {
-      [sockets[type][inode].localAddress, sockets[type][inode].localPort] = formatIPv6(elements[1]);
-      [sockets[type][inode].peerAddress, sockets[type][inode].peerPort] = formatIPv6(elements[2]);
+      [sockets[inode].localAddress, sockets[inode].localPort] = formatIPv6(elements[1]);
+      [sockets[inode].peerAddress, sockets[inode].peerPort] = formatIPv6(elements[2]);
     } else {
-      [sockets[type][inode].localAddress, sockets[type][inode].localPort] = formatIPv4(elements[1]);
-      [sockets[type][inode].peerAddress, sockets[type][inode].peerPort] = formatIPv4(elements[2]);
+      [sockets[inode].localAddress, sockets[inode].localPort] = formatIPv4(elements[1]);
+      [sockets[inode].peerAddress, sockets[inode].peerPort] = formatIPv4(elements[2]);
     }
 
-    sockets[type][inode].state = formatState(elements[3]);
-    [sockets[type][inode].sendQueue, sockets[type][inode].receiveQueue] = formatRxTx(elements[4]);
+    if (sockets[inode].localAddress == null || sockets[inode].peerAddress == null) {
+      delete sockets[inode];
+      continue;
+    }
+
+    sockets[inode].users = {};
+    sockets[inode].inode = inode;
   }
 }
 
@@ -59,10 +68,16 @@ function formatIPv4(line) {
     .map(hexToDecimal);
   hexArray.reverse();
 
-  let localAddress = hexArray.join(".");
-  let localPort = hexToDecimal(hexPort) + "";
+  let address;
+  if (parseInt(hexArray) == 0) {
+    // Catch undefined addresses
+    address = null;
+  } else {
+    address = hexArray.join(".");
+  }
+  let port = hexToDecimal(hexPort) + "";
 
-  return [localAddress, localPort];
+  return [address, port];
 }
 
 function formatIPv6(line) {
@@ -81,18 +96,19 @@ function formatIPv6(line) {
     [hexArray[i], hexArray[i + 1]] = [hexArray[i + 1], hexArray[i]];
   }
 
-  let localAddress;
+  let address;
 
   let sum = hexToDecimal(hexArray.join(""));
   if (sum == 0) {
-    localAddress = null;
+    // Catch undefined addresses
+    address = null;
   } else if (sum == 1) {
     // Shorten loopback address
-    localAddress = "::1";
+    address = "::1";
   } else if (hexArray.slice(0, 6).join("") == "00000000000000000000FFFF") {
     // Catch IPv4 expressed in IPv6 notation
     hexArray = hexArray[6] + hexArray[7];
-    localAddress = hexArray
+    address = hexArray
       .split(/(..)/g)
       .filter((s) => s)
       .map(hexToDecimal)
@@ -103,11 +119,11 @@ function formatIPv6(line) {
       hex = parseInt(hex, 16);
       hexArray[i] = hex == "0000" ? "" : hexArray[i];
     });
-    localAddress = hexArray.join(":");
+    address = hexArray.join(":");
   }
-  let localPort = hexToDecimal(hexPort) + "";
+  let port = hexToDecimal(hexPort) + "";
 
-  return [localAddress, localPort];
+  return [address, port];
 }
 
 function formatRxTx(line) {
@@ -123,7 +139,7 @@ function formatState(hex) {
 
   switch (hex) {
     case "01":
-      state = "ESTABLISHED";
+      state = "ESTAB";
       break;
     case "02":
       state = "SYN_SENT";
