@@ -2,39 +2,53 @@ const fs = require("fs");
 
 var sockets = { tcp: {}, udp: {}, tcp6: {}, udp6: {} };
 
-fs.readFile("/proc/net/tcp", "utf8", (err, data) => {
-  if (err) throw err;
-  //parseSockets(data, "tcp");
-  //console.log(sockets);
-});
+async function getSockets() {
+  var tcp, udp, tcp6, udp6;
+  tcp = udp = tcp6 = udp6 = false;
+  function checkFlags() {
+    return new Promise((resolve) => {
+      function flagPromise() {
+        if (tcp && udp && tcp6 && udp6) {
+          resolve();
+        } else {
+          setTimeout(flagPromise, 100);
+        }
+      }
+      flagPromise();
+    });
+  }
 
-fs.readFile("/proc/net/udp", "utf8", (err, data) => {
-  if (err) throw err;
-  //parseSockets(data, "udp");
-  //console.log(sockets);
-});
+  fs.readFile("/proc/net/tcp", "utf8", (err, data) => {
+    if (err) throw err;
+    parseSockets(data, "tcp");
+    tcp = true;
+  });
 
-fs.readFile("/proc/net/tcp6", "utf8", (err, data) => {
-  if (err) throw err;
-  parseSockets(data, "tcp6");
-  console.log(sockets);
-});
+  fs.readFile("/proc/net/udp", "utf8", (err, data) => {
+    if (err) throw err;
+    parseSockets(data, "udp");
+    udp = true;
+  });
 
-fs.readFile("/proc/net/udp6", "utf8", (err, data) => {
-  if (err) throw err;
-  //parseSockets(data, "udp6");
-  //console.log(sockets);
-});
+  fs.readFile("/proc/net/tcp6", "utf8", (err, data) => {
+    if (err) throw err;
+    parseSockets(data, "tcp6");
+    tcp6 = true;
+  });
 
-function hexToDecimal(str) {
-  return parseInt(Number("0x" + str), 10);
+  fs.readFile("/proc/net/udp6", "utf8", (err, data) => {
+    if (err) throw err;
+    parseSockets(data, "udp6");
+    udp6 = true;
+  });
+
+  await checkFlags();
+  return sockets;
 }
 
 function parseSockets(data, type) {
   let lines = data.split(/\r\n|\r|\n/);
   lines.shift();
-
-  //console.log(lines);
 
   for (var line of lines) {
     if (!line) {
@@ -54,6 +68,10 @@ function parseSockets(data, type) {
     sockets[type][inode].state = formatState(elements[3]);
     [sockets[type][inode].sendQueue, sockets[type][inode].receiveQueue] = formatRxTx(elements[4]);
   }
+}
+
+function hexToDecimal(str) {
+  return parseInt(Number("0x" + str), 10);
 }
 
 function formatIPv4(line) {
@@ -170,3 +188,5 @@ function formatState(hex) {
 
   return state;
 }
+
+module.exports = getSockets;
