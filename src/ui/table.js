@@ -5,6 +5,9 @@ const ss = require("src/lib/ssWrapper");
 const helper = require("src/lib/helper");
 const popups = require("src/ui/popups");
 
+const pino = require("pino");
+const logger = pino(pino.destination("/tmp/node.log"));
+
 function Table(options) {
   var self = this;
 
@@ -37,8 +40,8 @@ function Table(options) {
   });
 
   this.on("resize", function () {
-    self.setContent("");
-    self.setData(self.rows);
+    logger.info("RESIZE");
+    this.setData(self.table);
     self.screen.render();
   });
 
@@ -52,10 +55,7 @@ function Table(options) {
   });
 
   this.key(["right"], function (ch, key) {
-    if (
-      this.selected[1] + 1 ==
-      Object.values(this.table.data[this.selected[0]]).length
-    ) {
+    if (this.selected[1] + 1 == Object.values(this.table.data[this.selected[0]]).length) {
       return;
     }
     this.selected = [this.selected[0], this.selected[1] + 1];
@@ -85,22 +85,13 @@ function Table(options) {
 
   this.key(["s"], function (ch, key) {
     this.table.data = helper.sortBy(this.selected[1], this.table.data);
-    this.selected = [
-      helper.retrieveSocket(
-        this.currentSocket,
-        this.table.data,
-        this.selected[0]
-      ),
-      this.selected[1],
-    ];
+    this.selected = [helper.retrieveSocket(this.currentSocket, this.table.data, this.selected[0]), this.selected[1]];
     this.setData(this.table);
     self.screen.render();
   });
 
   this.key(["enter"], function (ch, key) {
-    let content = Object.values(this.table.data[this.selected[0]])[
-      this.selected[1]
-    ];
+    let content = Object.values(this.table.data[this.selected[0]])[this.selected[1]];
     popups.handlePopup(this.screen, this.selected[1], content);
   });
 
@@ -176,18 +167,18 @@ Table.prototype.setRows = Table.prototype.setData = function (table) {
     var rows = [];
     Object.values(table.data).forEach(function (d) {
       let row = Object.values(d);
-      row.pop();
-      row.push(d["users"].text);
+      delete row[8];
+      delete row[9];
+      row[8] = d["users"].text;
       rows.push(row);
     });
     this.rows = rows;
+    console.log(rows);
   }
 
   try {
     this.rows[this.selected[0]][this.selected[1]] =
-      "{blue-bg}{bold}" +
-      this.rows[this.selected[0]][this.selected[1]] +
-      "{/bold}{/blue-bg}";
+      "{blue-bg}{bold}" + this.rows[this.selected[0]][this.selected[1]] + "{/bold}{/blue-bg}";
   } catch (TypeError) {
     //pass
   }
