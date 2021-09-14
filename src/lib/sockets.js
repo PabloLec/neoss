@@ -1,49 +1,23 @@
 const fs = require("fs");
+const { resolve } = require("path");
 
 var sockets = { tcp: {}, udp: {}, tcp6: {}, udp6: {} };
 
 async function getSockets() {
-  var tcp, udp, tcp6, udp6;
-  tcp = udp = tcp6 = udp6 = false;
-  function checkFlags() {
-    return new Promise((resolve) => {
-      function flagPromise() {
-        if (tcp && udp && tcp6 && udp6) {
-          resolve();
-        } else {
-          setTimeout(flagPromise, 100);
-        }
-      }
-      flagPromise();
-    });
-  }
+  var promises = [];
 
-  fs.readFile("/proc/net/tcp", "utf8", (err, data) => {
-    if (err) throw err;
-    parseSockets(data, "tcp");
-    tcp = true;
-  });
+  promises.push(readProcFile("tcp"));
+  promises.push(readProcFile("udp"));
+  promises.push(readProcFile("tcp6"));
+  promises.push(readProcFile("udp6"));
 
-  fs.readFile("/proc/net/udp", "utf8", (err, data) => {
-    if (err) throw err;
-    parseSockets(data, "udp");
-    udp = true;
-  });
-
-  fs.readFile("/proc/net/tcp6", "utf8", (err, data) => {
-    if (err) throw err;
-    parseSockets(data, "tcp6");
-    tcp6 = true;
-  });
-
-  fs.readFile("/proc/net/udp6", "utf8", (err, data) => {
-    if (err) throw err;
-    parseSockets(data, "udp6");
-    udp6 = true;
-  });
-
-  await checkFlags();
+  await Promise.all(promises);
   return sockets;
+}
+
+async function readProcFile(file) {
+  let content = fs.readFileSync("/proc/net/" + file, "utf8");
+  parseSockets(content, file);
 }
 
 function parseSockets(data, type) {
