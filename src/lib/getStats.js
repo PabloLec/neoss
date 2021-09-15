@@ -4,9 +4,6 @@ const dns = require("dns");
 const helper = require("src/lib/helper");
 const popups = require("src/ui/popups");
 
-const pino = require("pino");
-const logger = pino(pino.destination("/tmp/node.log"));
-
 var usedSocket, screen, table;
 var sockets = [];
 

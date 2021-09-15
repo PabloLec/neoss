@@ -1,6 +1,3 @@
-const pino = require("pino");
-const logger = pino(pino.destination("/tmp/node.log"));
-
 var lastSort;
 var lastScroll;
 

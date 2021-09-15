@@ -5,9 +5,6 @@ const getStats = require("src/lib/getStats");
 const helper = require("src/lib/helper");
 const popups = require("src/ui/popups");
 
-const pino = require("pino");
-const logger = pino(pino.destination("/tmp/node.log"));
-
 function Table(options) {
   var self = this;
 
