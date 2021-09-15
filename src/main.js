@@ -1,7 +1,7 @@
 require("app-module-path").addPath(`${__dirname}/app`);
 const blessed = require("neo-blessed");
 const Table = require.main.require("src/ui/table");
-const ss = require("src/lib/getStats");
+const getStats = require("src/lib/getStats");
 
 const screen = blessed.screen({
   smartCSR: true,
@@ -35,7 +35,7 @@ const table = Table({
   },
 });
 
-ss(screen, table);
+getStats(screen, table);
 screen.key(["escape", "q", "C-c"], function (ch, key) {
   return process.exit(0);
 });

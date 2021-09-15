@@ -1,3 +1,6 @@
+const pino = require("pino");
+const logger = pino(pino.destination("/tmp/node.log"));
+
 var lastSort;
 var lastScroll;
 
@@ -19,7 +22,10 @@ function retrieveSocket(socket, data, currentIndex) {
     let l = data[i];
     let s = socket;
 
-    if (
+    if (s.inode != "0" && s.inode == l.inode) {
+      currentIndex = i;
+      break;
+    } else if (
       s.localAddress == l.localAddress &&
       s.localPort == l.localPort &&
       s.peerAddress == l.peerAddress &&

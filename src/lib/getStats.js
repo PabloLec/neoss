@@ -38,35 +38,42 @@ async function getStats(mainScreen, mainTable) {
 
   screen.append(table);
   table.setData({
-    headers: [
-      "Protocol",
-      "State",
-      "Receive Queue",
-      "Send Queue",
-      "Local Address",
-      "Local Port",
-      "Peer Address",
-      "Peer Port",
-      "Users",
-    ],
+    headers: ["Protocol", "State", "Rx", "Tx", "Local Address", "Local Port", "Peer Address", "Peer Port", "Users"],
     data: sockets,
   });
-
-  logger.info(table.table);
 
   table.focus();
   // Retrieve previous selected cell, if any.
   table.selected = [helper.retrieveSocket(table.currentSocket, table.table.data, table.selected[0]), table.selected[1]];
   popups.removePopup();
   screen.render();
+  reverseNSLookup();
+}
+
+async function reverseNSLookup() {
+  for (let i = 0; i < sockets.length; i++) {
+    dns.reverse(
+      sockets[i].peerAddress,
+      (callback = (err, result) => {
+        if (!err) {
+          if (result.length > 0) {
+            sockets[i].peerAddress = result[0];
+            table.setData(table.table);
+            screen.render();
+          }
+        }
+      })
+    );
+  }
 }
 
 async function parseUsersData(socket, i) {
   for (let j = 0; j < usedSockets[socket].length; j++) {
     sockets[i].users[j] = {};
+    sockets[i].users[j].pid = usedSockets[sockets[i].inode][j];
 
-    [sockets[i].users[j].name, sockets[i].users[j].pid, sockets[i].users[j].cmdline] = await users.getUserData(
-      usedSockets[sockets[i].inode][j]
+    [sockets[i].users[j].name, sockets[i].users[j].owner, sockets[i].users[j].cmdline] = await users.getUserData(
+      sockets[i].users[j].pid
     );
   }
 
