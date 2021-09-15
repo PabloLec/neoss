@@ -1,20 +1,18 @@
-const getSockets = require("./sockets");
-const users = require("./users");
+require("app-module-path").addPath(`${__dirname}/app`);
 const dns = require("dns");
+const getSockets = require("src/lib/sockets");
+const users = require("src/lib/users");
 const helper = require("src/lib/helper");
 const popups = require("src/ui/popups");
 
-const pino = require("pino");
-const logger = pino(pino.destination("/tmp/node.log"));
-
-var socketsPromise = getSockets();
-var usedSocketsPromise = users.getUsedSockets();
 var usedSocket, screen, table;
 var sockets = [];
 
 async function getStats(mainScreen, mainTable) {
   screen = mainScreen;
   table = mainTable;
+  socketsPromise = getSockets();
+  usedSocketsPromise = users.getUsedSockets();
   usersPromises = [];
   popups.loadingPopup(screen);
 
@@ -38,35 +36,47 @@ async function getStats(mainScreen, mainTable) {
 
   screen.append(table);
   table.setData({
-    headers: [
-      "Protocol",
-      "State",
-      "Receive Queue",
-      "Send Queue",
-      "Local Address",
-      "Local Port",
-      "Peer Address",
-      "Peer Port",
-      "Users",
-    ],
+    headers: ["Protocol", "State", "Rx", "Tx", "Local Address", "Local Port", "Peer Address", "Peer Port", "Users"],
     data: sockets,
   });
-
-  logger.info(table.table);
 
   table.focus();
   // Retrieve previous selected cell, if any.
   table.selected = [helper.retrieveSocket(table.currentSocket, table.table.data, table.selected[0]), table.selected[1]];
   popups.removePopup();
   screen.render();
+  reverseNSLookup();
+}
+
+async function reverseNSLookup() {
+  for (let i = 0; i < sockets.length; i++) {
+    try {
+      dns.reverse(
+        sockets[i].peerAddress,
+        (callback = (err, result) => {
+          if (!err) {
+            if (result.length == 0 || result[0].length == 0) {
+              return;
+            }
+            sockets[i].peerAddress = result[0];
+            table.setData(table.table);
+            screen.render();
+          }
+        })
+      );
+    } catch {
+      continue;
+    }
+  }
 }
 
 async function parseUsersData(socket, i) {
   for (let j = 0; j < usedSockets[socket].length; j++) {
     sockets[i].users[j] = {};
+    sockets[i].users[j].pid = usedSockets[sockets[i].inode][j];
 
-    [sockets[i].users[j].name, sockets[i].users[j].pid, sockets[i].users[j].cmdline] = await users.getUserData(
-      usedSockets[sockets[i].inode][j]
+    [sockets[i].users[j].name, sockets[i].users[j].owner, sockets[i].users[j].cmdline] = await users.getUserData(
+      sockets[i].users[j].pid
     );
   }
 

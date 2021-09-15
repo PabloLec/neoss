@@ -44,6 +44,11 @@ function parseSockets(data, type) {
     }
 
     if (sockets[inode].localAddress == null || sockets[inode].peerAddress == null) {
+      // Remove sockets with unkown addresses
+      delete sockets[inode];
+      continue;
+    } else if (sockets[inode].localAddress == sockets[inode].peerAddress || sockets[inode].peerAddress == "localhost") {
+      // Remove loopback sockets
       delete sockets[inode];
       continue;
     }
@@ -157,7 +162,7 @@ function formatState(hex) {
       state = "TIME_WAIT";
       break;
     case "07":
-      state = "CLOSE";
+      state = "CLOSED";
       break;
     case "08":
       state = "CLOSE_WAIT";

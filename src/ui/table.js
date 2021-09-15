@@ -1,12 +1,9 @@
 const blessed = require("neo-blessed"),
   Node = blessed.Node,
   Box = blessed.Box;
-const ss = require("src/lib/ssWrapper");
+const getStats = require("src/lib/getStats");
 const helper = require("src/lib/helper");
 const popups = require("src/ui/popups");
-
-const pino = require("pino");
-const logger = pino(pino.destination("/tmp/node.log"));
 
 function Table(options) {
   var self = this;
@@ -40,7 +37,6 @@ function Table(options) {
   });
 
   this.on("resize", function () {
-    logger.info("RESIZE");
     this.setData(self.table);
     self.screen.render();
   });
@@ -55,7 +51,7 @@ function Table(options) {
   });
 
   this.key(["right"], function (ch, key) {
-    if (this.selected[1] + 1 == Object.values(this.table.data[this.selected[0]]).length) {
+    if (this.selected[1] + 1 == Object.values(this.table.data[this.selected[0]]).length - 1) {
       return;
     }
     this.selected = [this.selected[0], this.selected[1] + 1];
@@ -96,7 +92,7 @@ function Table(options) {
   });
 
   this.key(["r", "R"], function (ch, key) {
-    ss(this.screen, this);
+    getStats(this.screen, this);
   });
 }
 
@@ -167,13 +163,14 @@ Table.prototype.setRows = Table.prototype.setData = function (table) {
     var rows = [];
     Object.values(table.data).forEach(function (d) {
       let row = Object.values(d);
+      // Remove inode and user cells
       delete row[8];
       delete row[9];
+      // Add user text only
       row[8] = d["users"].text;
       rows.push(row);
     });
     this.rows = rows;
-    console.log(rows);
   }
 
   try {

@@ -1,13 +1,14 @@
 const fs = require("fs");
 const exec = require("child_process").execSync;
 
-var socketList = {};
+var socketList;
 
 function timeout(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 async function getUsedSockets() {
+  socketList = {};
   var processes = [];
   files = fs.readdirSync("/proc/");
   files.forEach((file) => {
