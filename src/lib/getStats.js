@@ -57,11 +57,12 @@ async function reverseNSLookup() {
         sockets[i].peerAddress,
         (callback = (err, result) => {
           if (!err) {
-            if (result.length > 0 && result[0].length > 0) {
-              sockets[i].peerAddress = result[0];
-              table.setData(table.table);
-              screen.render();
+            if (result.length == 0 || result[0].length == 0) {
+              return;
             }
+            sockets[i].peerAddress = result[0];
+            table.setData(table.table);
+            screen.render();
           }
         })
       );

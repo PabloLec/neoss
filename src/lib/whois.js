@@ -21,6 +21,7 @@ function toString(data) {
  * @return {string} - Result text
  */
 async function whois(domain) {
+  // TODO: Parse reserved IP adresses
   var domainName = domain.split(".");
 
   if (domainName.some(isNaN)) {
@@ -30,8 +31,11 @@ async function whois(domain) {
   }
 
   var data = await whoisJson(domainName);
-  // TODO: Parse result, catch errors / non existing domains
-  return toString(data);
+  data = toString(data);
+  if (data.includes("no entries")) {
+    return "No entries found.";
+  }
+  return data;
 }
 
 module.exports = { whois };

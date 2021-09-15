@@ -47,7 +47,7 @@ function parseSockets(data, type) {
       // Remove sockets with unkown addresses
       delete sockets[inode];
       continue;
-    } else if (sockets[inode].localAddress == sockets[inode].peerAddress) {
+    } else if (sockets[inode].localAddress == sockets[inode].peerAddress || sockets[inode].peerAddress == "localhost") {
       // Remove loopback sockets
       delete sockets[inode];
       continue;
