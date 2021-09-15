@@ -1,7 +1,7 @@
 const blessed = require("neo-blessed"),
   Node = blessed.Node,
   Box = blessed.Box;
-const stats = require("src/lib/getStats");
+const getStats = require("src/lib/getStats");
 const helper = require("src/lib/helper");
 const popups = require("src/ui/popups");
 

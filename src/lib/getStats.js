@@ -7,14 +7,14 @@ const popups = require("src/ui/popups");
 const pino = require("pino");
 const logger = pino(pino.destination("/tmp/node.log"));
 
-var socketsPromise = getSockets();
-var usedSocketsPromise = users.getUsedSockets();
 var usedSocket, screen, table;
 var sockets = [];
 
 async function getStats(mainScreen, mainTable) {
   screen = mainScreen;
   table = mainTable;
+  socketsPromise = getSockets();
+  usedSocketsPromise = users.getUsedSockets();
   usersPromises = [];
   popups.loadingPopup(screen);
 
@@ -52,18 +52,22 @@ async function getStats(mainScreen, mainTable) {
 
 async function reverseNSLookup() {
   for (let i = 0; i < sockets.length; i++) {
-    dns.reverse(
-      sockets[i].peerAddress,
-      (callback = (err, result) => {
-        if (!err) {
-          if (result.length > 0 && result[0].length > 0) {
-            sockets[i].peerAddress = result[0];
-            table.setData(table.table);
-            screen.render();
+    try {
+      dns.reverse(
+        sockets[i].peerAddress,
+        (callback = (err, result) => {
+          if (!err) {
+            if (result.length > 0 && result[0].length > 0) {
+              sockets[i].peerAddress = result[0];
+              table.setData(table.table);
+              screen.render();
+            }
           }
-        }
-      })
-    );
+        })
+      );
+    } catch {
+      continue;
+    }
   }
 }
 
