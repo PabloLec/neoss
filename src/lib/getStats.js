@@ -1,6 +1,7 @@
-const getSockets = require("./sockets");
-const users = require("./users");
+require("app-module-path").addPath(`${__dirname}/app`);
 const dns = require("dns");
+const getSockets = require("src/lib/sockets");
+const users = require("src/lib/users");
 const helper = require("src/lib/helper");
 const popups = require("src/ui/popups");
 
