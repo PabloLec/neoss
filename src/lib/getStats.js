@@ -1,4 +1,3 @@
-require("app-module-path").addPath(`${__dirname}/app`);
 const dns = require("dns");
 const getSockets = require("src/lib/sockets");
 const users = require("src/lib/users");

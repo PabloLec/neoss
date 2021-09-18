@@ -1,23 +1,35 @@
 {
    "name": "neoss",
    "author": {
-      "name": "PabloLec",
+      "name": "Pablo Lecolinet",
       "email": "pablolec@pm.me",
       "url": "https://github.com/PabloLec"
    },
-   "version": "0.0.1",
+   "version": "1.0.0",
    "description": "",
    "main": "src/main.js",
+   "bin": {"neoss": "src/main.js"},
    "license": "BSD 3-Clause License",
    "keywords": [
       "ss",
       "socket statistic",
+      "socket statistics",
+      "port",
       "ports",
-      "network"
+      "connection",
+      "monitoring",
+      "network",
+      "cybersec",
+      "cyber security",
+      "security",
+      "tui",
+      "cui",
+      "tool",
+      "linux",
+      "unix"
    ],
    "repository": "github:PabloLec/neoss",
    "dependencies": {
-      "app-module-path": "^2.2.0",
       "blessed": "^0.1.81",
       "neo-blessed": "^0.2.0",
       "src": "file:./src",

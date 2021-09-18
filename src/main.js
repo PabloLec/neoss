@@ -1,13 +1,16 @@
-require("app-module-path").addPath(`${__dirname}/app`);
+#!/usr/bin/env node
+
 const blessed = require("neo-blessed");
 const Table = require.main.require("src/ui/table");
 const getStats = require("src/lib/getStats");
-
 const screen = blessed.screen({
   smartCSR: true,
 });
 
 screen.title = "neoss";
+screen.key(["escape", "q", "C-c"], function (ch, key) {
+  return process.exit(0);
+});
 
 const table = Table({
   keys: true,
@@ -36,6 +39,3 @@ const table = Table({
 });
 
 getStats(screen, table);
-screen.key(["escape", "q", "C-c"], function (ch, key) {
-  return process.exit(0);
-});

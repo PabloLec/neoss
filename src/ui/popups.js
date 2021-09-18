@@ -2,8 +2,8 @@ const blessed = require("neo-blessed"),
   Node = blessed.Node,
   Box = blessed.Box;
 const fs = require("fs");
+const path = require("path");
 const whois = require("src/lib/whois");
-
 var screen;
 var currentBox = null;
 var strings = {};
@@ -11,7 +11,7 @@ const stringsNames = ["ports", "protocols", "queues", "states"];
 
 // Load strings
 stringsNames.forEach(function (name) {
-  fs.readFile("src/strings/" + name + ".json", (err, data) => {
+  fs.readFile(path.join(__dirname, "..", "strings", name + ".json"), (err, data) => {
     if (err) throw err;
     strings[name] = JSON.parse(data);
   });

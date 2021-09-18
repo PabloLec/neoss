@@ -30,7 +30,9 @@ In addition to regular statistics you can select any data and get an explanation
 
 ## Demo
 
-TODO
+<p align="center">
+    <img src="docs/assets/demo.gif">
+</p>
 
 ## Installation
 
