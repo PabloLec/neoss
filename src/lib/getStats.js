@@ -37,9 +37,8 @@ async function getStats(mainScreen, mainTable) {
   screen.append(table);
   table.setData({
     headers: ["Protocol", "State", "Rx", "Tx", "Local Address", "Local Port", "Peer Address", "Peer Port", "Users"],
-    data: sockets,
+    data: helper.sortBy(null, sockets),
   });
-
   table.focus();
   // Retrieve previous selected cell, if any.
   table.selected = [helper.retrieveSocket(table.currentSocket, table.table.data, table.selected[0]), table.selected[1]];

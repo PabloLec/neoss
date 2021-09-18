@@ -1,5 +1,6 @@
 var lastSort;
 var lastScroll;
+var ascending = false;
 
 /**
  * Tries to retrieve previously selected line on a refreshed table.
@@ -45,13 +46,15 @@ function retrieveSocket(socket, data, currentIndex) {
  * @return {Array} - Sorted array of lines
  */
 function sortBy(column, data) {
-  if (lastSort == column) {
-    ascending = false;
-    lastSort = null;
-  } else {
-    ascending = true;
-    lastSort = column;
+  if (column == null && lastSort == null) {
+    return data;
+  } else if (column == null) {
+    column = lastSort;
+  } else if (lastSort == column) {
+    ascending = !ascending;
   }
+
+  lastSort = column;
 
   const sort = (key, numeric = false) => {
     if (ascending && numeric) {

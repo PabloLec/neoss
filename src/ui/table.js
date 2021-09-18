@@ -79,7 +79,7 @@ function Table(options) {
     self.screen.render();
   });
 
-  this.key(["s"], function (ch, key) {
+  this.key(["s", "S"], function (ch, key) {
     this.table.data = helper.sortBy(this.selected[1], this.table.data);
     this.selected = [helper.retrieveSocket(this.currentSocket, this.table.data, this.selected[0]), this.selected[1]];
     this.setData(this.table);
