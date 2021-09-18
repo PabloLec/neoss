@@ -1,6 +1,6 @@
 <div align="center">
     <h1>neoss</h1>
-    <i>Socket statistics, with an UI.</i>
+    <i>Socket statistics, with a UI.</i>
 </div>
 <p align="center">
 <a href="https://img.shields.io/github/v/release/pablolec/neoss" target="_blank">
@@ -50,3 +50,8 @@ To launch, simply type: ```neoss```
 <kbd>s</kbd> - Sort data based on currently selected column
 
 <kbd>Enter</kbd> - Open/Close detailed informations for currently selected cell
+
+## Contributing
+
+Any contribution is welcome.
+If you want to implement a feature or fix something, please open an issue first.
