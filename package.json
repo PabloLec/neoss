@@ -8,7 +8,9 @@
    "version": "1.0.0",
    "description": "",
    "main": "src/main.js",
-   "bin": {"neoss": "src/main.js"},
+   "bin": {
+      "neoss": "src/main.js"
+   },
    "license": "BSD 3-Clause License",
    "keywords": [
       "ss",
@@ -37,6 +39,6 @@
    },
    "devDependencies": {
       "cheerio": "^1.0.0-rc.10",
-      "pino": "^6.13.0"
+      "pino": "^6.13.2"
    }
 }

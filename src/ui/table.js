@@ -94,6 +94,7 @@ function Table(options) {
   this.key(["r", "R"], function (ch, key) {
     getStats(this.screen, this);
   });
+
 }
 
 Table.prototype.__proto__ = Box.prototype;
@@ -123,7 +124,8 @@ Table.prototype._calculateMaxes = function () {
   total += maxes.length + 1;
 
   if (this.width < total) {
-    delete this.position.width;
+    // delete this.position.width;
+    return (this._maxes = null);
   }
 
   if (this.position.width != null) {
@@ -189,7 +191,10 @@ Table.prototype.setRows = Table.prototype.setData = function (table) {
 
   this._calculateMaxes();
 
-  if (!this._maxes) return;
+  if (!this._maxes) {
+    this.setContent("Terminal width too small. Please resize your window.");
+    return
+  };
 
   this.rows.forEach(function (row, i) {
     var isFooter = i === self.rows.length - 1;
@@ -247,8 +252,9 @@ Table.prototype.render = function () {
   if (!coords) return;
 
   this._calculateMaxes();
-
-  if (!this._maxes) return coords;
+  if (!this._maxes) {
+    return
+  };
 
   var lines = this.screen.lines,
     xi = coords.xi,
