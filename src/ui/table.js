@@ -29,6 +29,7 @@ function Table(options) {
   this.currentSocket = null;
   this.table = [];
   this.popupVisible = false;
+  this.screenIsLocked = false
 
   this.setData(options.rows || options.data);
 
@@ -42,6 +43,7 @@ function Table(options) {
   });
 
   this.key(["left"], function (ch, key) {
+    if (this.screenIsLocked) return;
     if (this.selected[1] - 1 == -1) {
       return;
     }
@@ -51,6 +53,7 @@ function Table(options) {
   });
 
   this.key(["right"], function (ch, key) {
+    if (this.screenIsLocked) return;
     if (this.selected[1] + 1 == Object.values(this.table.data[this.selected[0]]).length - 1) {
       return;
     }
@@ -60,6 +63,7 @@ function Table(options) {
   });
 
   this.key(["up"], function (ch, key) {
+    if (this.screenIsLocked) return;
     if (this.selected[0] - 1 == -1) {
       return;
     }
@@ -70,6 +74,7 @@ function Table(options) {
   });
 
   this.key(["down"], function (ch, key) {
+    if (this.screenIsLocked) return;
     if (this.selected[0] + 1 == this.table.data.length) {
       return;
     }
@@ -80,6 +85,7 @@ function Table(options) {
   });
 
   this.key(["s", "S"], function (ch, key) {
+    if (this.screenIsLocked) return;
     this.table.data = helper.sortBy(this.selected[1], this.table.data);
     this.selected = [helper.retrieveSocket(this.currentSocket, this.table.data, this.selected[0]), this.selected[1]];
     this.setData(this.table);
@@ -87,11 +93,13 @@ function Table(options) {
   });
 
   this.key(["enter"], function (ch, key) {
+    if (this.screenIsLocked) return;
     let content = Object.values(this.table.data[this.selected[0]])[this.selected[1]];
     popups.handlePopup(this.screen, this.selected[1], content);
   });
 
   this.key(["r", "R"], function (ch, key) {
+    if (this.screenIsLocked) return;
     getStats(this.screen, this);
   });
 
@@ -193,8 +201,11 @@ Table.prototype.setRows = Table.prototype.setData = function (table) {
 
   if (!this._maxes) {
     this.setContent("Terminal width too small. Please resize your window.");
+    this.screenIsLocked = true;
+    popups.removePopup()
     return
   };
+  this.screenIsLocked = false;
 
   this.rows.forEach(function (row, i) {
     var isFooter = i === self.rows.length - 1;
