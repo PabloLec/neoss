@@ -7,6 +7,9 @@ import { setDefaultScreen } from "../ui/popups";
 var mainScreen: Screen;
 var table: Table;
 
+/**
+ * Create main application blessed screen and table objects.
+ */
 export function initialize() {
   mainScreen = Screen({
     smartCSR: true,
@@ -46,6 +49,9 @@ export function initialize() {
   });
 }
 
+/**
+ * Set new data as table content.
+ */
 export function setData(data: string[]) {
   mainScreen.append(table);
   table.setData({
@@ -54,6 +60,9 @@ export function setData(data: string[]) {
   });
 }
 
+/**
+ * Refresh screen with data currently stored in table for async results.
+ */
 export function refreshScreen() {
   table.setData(table.table);
 }

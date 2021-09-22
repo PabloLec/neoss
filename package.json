@@ -43,7 +43,6 @@
       "cheerio": "^1.0.0-rc.10",
       "nodemon": "^2.0.12",
       "pino": "^6.13.2",
-      "ts-migrate": "^0.1.22",
       "ts-node": "^10.2.1",
       "typescript": "^4.2.4"
    }

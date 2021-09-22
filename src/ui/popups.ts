@@ -1,4 +1,4 @@
-import { Node, Box } from "neo-blessed";
+import { Box } from "neo-blessed";
 import { readFile } from "fs";
 import { join } from "path";
 import { whois } from "../utils/whois";
@@ -19,12 +19,18 @@ export function setDefaultScreen(defaultScreen: any) {
   screen = defaultScreen;
 }
 
+/**
+ * If a popup exists in currentBox var, focus it.
+ */
 export function focusPopup() {
   if (currentBox != null) {
     currentBox.focus();
   }
 }
 
+/**
+ * Remove popup currently stored in currentBox var and returns focus to main table.
+ */
 export function removePopup() {
   if (currentBox == null) {
     return;
@@ -35,6 +41,12 @@ export function removePopup() {
   screen.render();
 }
 
+/**
+ * Store a blessed box in currentBox var and adds keybindings.
+ *
+ * @param content - Text content
+ * @param escapable=true - Is popup escapable with keys
+ */
 function createPopup(content: string | null, escapable = true) {
   if (content == null) {
     return;
@@ -50,6 +62,12 @@ function createPopup(content: string | null, escapable = true) {
   currentBox.focus();
 }
 
+/**
+ * Handle popup creation event according to selected table cell.
+ *
+ * @param column - Column number to determine content type
+ * @param content - Table cell content
+ */
 export function handlePopup(column: number, content: string | null) {
   switch (column) {
     case 0:
@@ -85,7 +103,12 @@ export function handlePopup(column: number, content: string | null) {
   }
 }
 
-function canShrink(content: string) {
+/**
+ * Determine if the content is longer than half of screen height. If so, the popup can shrink.
+ *
+ * @param content - Text content
+ */
+function canShrink(content: string): boolean {
   let maxShrinkSize = Math.floor((Math.floor(screen.lines.length / 2) - 1) / 2);
   let numberOfLines = content.split(/\r\n|\r|\n/).length;
   if (numberOfLines < maxShrinkSize) {
@@ -95,7 +118,12 @@ function canShrink(content: string) {
   }
 }
 
-function createBox(content: string) {
+/**
+ * Create a blessed Box object with given content.
+ *
+ * @param  {string} content - Text content
+ */
+function createBox(content: string): Box {
   let height = "50%";
   let scrollable = true;
   if (canShrink(content)) {
@@ -125,7 +153,12 @@ function createBox(content: string) {
   });
 }
 
-function getPortText(port: string | null) {
+/**
+ * Get popup text content for ports.
+ *
+ * @param port - Port number
+ */
+function getPortText(port: string | null): string {
   let assignment = strings["ports"][port];
   if (assignment == undefined) {
     return "This port is not assigned";
@@ -137,7 +170,12 @@ function getPortText(port: string | null) {
   return text;
 }
 
-function getUsersText(users: any) {
+/**
+ * Get popup text content for users.
+ *
+ * @param {Object} users - Users object
+ */
+function getUsersText(users: any): string | null {
   if (users.text == "/") {
     return null;
   }
@@ -160,6 +198,9 @@ function getUsersText(users: any) {
   return text;
 }
 
+/**
+ * Display loading popup.
+ */
 export function loadingPopup() {
   createPopup("Loading{blink}...{/blink}", false);
 }
