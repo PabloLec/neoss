@@ -1,8 +1,8 @@
 const blessed = require("neo-blessed"),
   Node = blessed.Node,
   Box = blessed.Box;
-const getStats = require("src/lib/getStats");
-const helper = require("src/lib/helper");
+const getStats = require("src/utils/getStats");
+const helper = require("src/utils/helper");
 const popups = require("src/ui/popups");
 
 function Table(options) {
@@ -29,7 +29,7 @@ function Table(options) {
   this.currentSocket = null;
   this.table = [];
   this.popupVisible = false;
-  this.screenIsLocked = false
+  this.screenIsLocked = false;
 
   this.setData(options.rows || options.data);
 
@@ -102,7 +102,6 @@ function Table(options) {
     if (this.screenIsLocked) return;
     getStats(this.screen, this);
   });
-
 }
 
 Table.prototype.__proto__ = Box.prototype;
@@ -202,9 +201,9 @@ Table.prototype.setRows = Table.prototype.setData = function (table) {
   if (!this._maxes) {
     this.setContent("Terminal width too small. Please resize your window.");
     this.screenIsLocked = true;
-    popups.removePopup()
-    return
-  };
+    popups.removePopup();
+    return;
+  }
   this.screenIsLocked = false;
 
   this.rows.forEach(function (row, i) {
@@ -264,8 +263,8 @@ Table.prototype.render = function () {
 
   this._calculateMaxes();
   if (!this._maxes) {
-    return
-  };
+    return;
+  }
 
   var lines = this.screen.lines,
     xi = coords.xi,

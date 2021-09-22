@@ -3,7 +3,7 @@ const blessed = require("neo-blessed"),
   Box = blessed.Box;
 const fs = require("fs");
 const path = require("path");
-const whois = require("src/lib/whois");
+const whois = require("src/utils/whois");
 var screen;
 var currentBox = null;
 var strings = {};

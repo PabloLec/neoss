@@ -1,7 +1,7 @@
 const dns = require("dns");
-const getSockets = require("src/lib/sockets");
-const users = require("src/lib/users");
-const helper = require("src/lib/helper");
+const getSockets = require("src/utils/sockets");
+const users = require("src/utils/users");
+const helper = require("src/utils/helper");
 const popups = require("src/ui/popups");
 
 var usedSocket, screen, table;

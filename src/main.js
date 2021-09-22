@@ -2,7 +2,7 @@
 
 const blessed = require("neo-blessed");
 const Table = require.main.require("src/ui/table");
-const getStats = require("src/lib/getStats");
+const getStats = require("src/utils/getStats");
 const screen = blessed.screen({
   smartCSR: true,
 });
