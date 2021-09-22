@@ -100,7 +100,7 @@ function Table(options) {
 
   this.key(["r", "R"], function (ch, key) {
     if (this.screenIsLocked) return;
-    getStats();
+    getStats.getStats();
   });
 }
 
