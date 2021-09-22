@@ -1,9 +1,9 @@
-import { readFileSync } from "fs"
+import { readFileSync } from "fs";
 
 var sockets = {};
 
 export async function getSockets() {
-  var promises : Promise<void>[] = [];
+  let promises: Promise<void>[] = [];
 
   promises.push(readProcFile("tcp"));
   promises.push(readProcFile("udp"));
@@ -14,21 +14,21 @@ export async function getSockets() {
   return sockets;
 }
 
-async function readProcFile(file: any) {
+async function readProcFile(file: string) {
   let content = readFileSync("/proc/net/" + file, "utf8");
   parseSockets(content, file);
 }
 
-function parseSockets(data: any, type: any) {
+function parseSockets(data: string, type: string) {
   let lines = data.split(/\r\n|\r|\n/);
   lines.shift();
 
-  for (var line of lines) {
+  for (let line of lines) {
     if (!line) {
       continue;
     }
     let elements = line.trim().split(/\s+/);
-    let inode: string = elements[9];
+    let inode = elements[9];
 
     sockets[inode] = {};
     sockets[inode].protocol = type.slice(0, 3);
@@ -58,14 +58,14 @@ function parseSockets(data: any, type: any) {
   }
 }
 
-function hexToDecimal(str: any) {
-  return parseInt(Number("0x" + str)+"", 10);
+function hexToDecimal(str: string) {
+  return parseInt(Number("0x" + str) + "", 10);
 }
 
-function formatIPv4(line: any) {
-  line = line.split(":");
-  let hexAddress = line[0];
-  let hexPort = line[1];
+function formatIPv4(line: string) {
+  let lineMap = line.split(":");
+  let hexAddress = lineMap[0];
+  let hexPort = lineMap[1];
 
   let hexArray = hexAddress
     .split(/(..)/g)
@@ -73,8 +73,8 @@ function formatIPv4(line: any) {
     .map(hexToDecimal);
   hexArray.reverse();
 
-  let address;
-  if (parseInt(hexArray) == 0) {
+  let address: string | null;
+  if (parseInt(hexArray.join("")) == 0) {
     // Catch undefined addresses
     address = null;
   } else {
@@ -85,23 +85,23 @@ function formatIPv4(line: any) {
   return [address, port];
 }
 
-function formatIPv6(line: any) {
-  line = line.split(":");
-  let hexAddress = line[0];
-  let hexPort = line[1];
+function formatIPv6(line: string) {
+  let lineMap = line.split(":");
+  let hexAddress = lineMap[0];
+  let hexPort = lineMap[1];
 
-  let hexArray = hexAddress.split(/(....)/g).filter((s: any) => s);
-  hexArray.forEach(function (hex: any, i: any) {
-    hexArray[i] = hex.split(/(..)/g).filter((s: any) => s);
-    hexArray[i].reverse();
-    hexArray[i] = hexArray[i].join("");
+  let hexArray = hexAddress.split(/(....)/g).filter((s: string) => s);
+  hexArray.forEach(function (hex: string, i: number) {
+    let splitHex = hex.split(/(..)/g).filter((s: any) => s);
+    splitHex.reverse();
+    hexArray[i] = splitHex.join("");
   });
 
   for (var i = 0; i < hexArray.length; i += 2) {
     [hexArray[i], hexArray[i + 1]] = [hexArray[i + 1], hexArray[i]];
   }
 
-  let address;
+  let address: string | null;
 
   let sum = hexToDecimal(hexArray.join(""));
   if (sum == 0) {
@@ -112,17 +112,17 @@ function formatIPv6(line: any) {
     address = "::1";
   } else if (hexArray.slice(0, 6).join("") == "00000000000000000000FFFF") {
     // Catch IPv4 expressed in IPv6 notation
-    hexArray = hexArray[6] + hexArray[7];
-    address = hexArray
+    let ipV4Part = hexArray[6] + hexArray[7];
+    address = ipV4Part
       .split(/(..)/g)
       .filter((s: any) => s)
       .map(hexToDecimal)
       .join(".");
   } else {
-    hexArray.forEach(function (hex: any, i: any) {
+    hexArray.forEach(function (hex: string, i: number) {
       // Notation shortening
-      hex = parseInt(hex, 16);
-      hexArray[i] = hex == "0000" ? "" : hexArray[i];
+      let hexInt = parseInt(hex, 16) + "";
+      hexArray[i] = hexInt == "0000" ? "" : hexArray[i];
     });
     address = hexArray.join(":");
   }
@@ -131,16 +131,16 @@ function formatIPv6(line: any) {
   return [address, port];
 }
 
-function formatRxTx(line: any) {
-  line = line.split(":");
-  let rx = hexToDecimal(line[0]) + "";
-  let tx = hexToDecimal(line[1]) + "";
+function formatRxTx(line: string) {
+  let lineMap = line.split(":");
+  let rx = hexToDecimal(lineMap[0]) + "";
+  let tx = hexToDecimal(lineMap[1]) + "";
 
   return [rx, tx];
 }
 
-function formatState(hex: any) {
-  let state;
+function formatState(hex: string) {
+  let state = "";
 
   switch (hex) {
     case "01":

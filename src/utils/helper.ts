@@ -2,23 +2,15 @@ var lastSort: any;
 var lastScroll: any;
 var ascending = false;
 
-/**
- * Tries to retrieve previously selected line on a refreshed table.
- *
- * @param  {Object} socket - Socket object
- * @param  {Array} data - Array of lines displayed on the screen
- * @param  {int} currentIndex - Current index, returned if unsuccessful
- * @return {int} - Index to be selected
- */
-export function retrieveSocket(socket: any, data: any, currentIndex: any) {
+export function retrieveSocket(socket: any, data: string, currentIndex: number) {
   if (socket == null) {
     return currentIndex;
   }
 
   let i = 0;
   while (i < data.length) {
-    let l = data[i];
-    let s = socket;
+    let l: any = data[i];
+    let s: any = socket;
 
     if (s.inode != "0" && s.inode == l.inode) {
       currentIndex = i;
@@ -38,14 +30,7 @@ export function retrieveSocket(socket: any, data: any, currentIndex: any) {
   return currentIndex;
 }
 
-/**
- * Handles column based sort.
- *
- * @param  {int} column - Currently selected column to determine content type
- * @param  {Array} data - Array of lines
- * @return {Array} - Sorted array of lines
- */
-export function sortBy(column: any, data: any) {
+export function sortBy(column: number | null, data: string[]) {
   if (column == null && lastSort == null) {
     return data;
   } else if (column == null) {
@@ -56,19 +41,19 @@ export function sortBy(column: any, data: any) {
 
   lastSort = column;
 
-  const sort = (key: any, numeric = false) => {
+  const sort = (key: string, numeric = false) => {
     if (ascending && numeric) {
-      data.sort((a: any, b: any) => (parseInt(a[key]) > parseInt(b[key]) ? 1 : -1));
+      data.sort((a: string, b: string) => (parseInt(a[key]) > parseInt(b[key]) ? 1 : -1));
     } else if (!ascending && numeric) {
-      data.sort((a: any, b: any) => (parseInt(a[key]) < parseInt(b[key]) ? 1 : -1));
+      data.sort((a: string, b: string) => (parseInt(a[key]) < parseInt(b[key]) ? 1 : -1));
     } else if (key == "users" && ascending) {
-      data.sort((a: any, b: any) => (a[key].text > b[key].text ? 1 : -1));
+      data.sort((a: string, b: string) => (a[key].text > b[key].text ? 1 : -1));
     } else if (key == "users") {
-      data.sort((a: any, b: any) => (a[key].text < b[key].text ? 1 : -1));
+      data.sort((a: string, b: string) => (a[key].text < b[key].text ? 1 : -1));
     } else if (ascending) {
-      data.sort((a: any, b: any) => (a[key] > b[key] ? 1 : -1));
+      data.sort((a: string, b: string) => (a[key] > b[key] ? 1 : -1));
     } else {
-      data.sort((a: any, b: any) => (a[key] < b[key] ? 1 : -1));
+      data.sort((a: string, b: string) => (a[key] < b[key] ? 1 : -1));
     }
   };
 
@@ -105,24 +90,18 @@ export function sortBy(column: any, data: any) {
   return data;
 }
 
-/**
- * Get lines index range to be displayed on scroll.
- *
- * @param  {int} row - Selected line index
- * @param  {Array} screenLines - Complete array of table lines
- * @return {[int, int]} - Lines index range to be displayed
- */
-export function getScroll(row: any, screenLines: any) {
+export function getScroll(row: number, screenLines: number) {
   if (lastScroll === undefined) {
     lastScroll = [0, screenLines - 1];
   }
 
-  var newScroll;
+  let newScroll: number[] | null = null;
+  let diff: number;
 
   if (row >= lastScroll[0] && row < lastScroll[1]) {
     newScroll = lastScroll;
   } else if (row < lastScroll[0]) {
-    var diff: number = lastScroll[0] - row;
+    diff = lastScroll[0] - row;
     newScroll = [lastScroll[0] - diff, lastScroll[1] - diff];
   } else if (row >= lastScroll[1]) {
     diff = row - lastScroll[1] + 1;

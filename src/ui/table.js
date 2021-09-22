@@ -95,12 +95,12 @@ function Table(options) {
   this.key(["enter"], function (ch, key) {
     if (this.screenIsLocked) return;
     let content = Object.values(this.table.data[this.selected[0]])[this.selected[1]];
-    popups.handlePopup(this.screen, this.selected[1], content);
+    popups.handlePopup(this.selected[1], content);
   });
 
   this.key(["r", "R"], function (ch, key) {
     if (this.screenIsLocked) return;
-    getStats(this.screen, this);
+    getStats();
   });
 }
 
@@ -253,6 +253,7 @@ Table.prototype.setRows = Table.prototype.setData = function (table) {
   this.setContent(text);
   this.align = align;
   this.focus();
+  this.selected = [helper.retrieveSocket(this.currentSocket, this.table.data, this.selected[0]), this.selected[1]];
 };
 
 Table.prototype.render = function () {
