@@ -1,7 +1,10 @@
+// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'fs'.
 const fs = require("fs");
 
+// @ts-expect-error ts-migrate(2403) FIXME: Subsequent variable declarations must have the sam... Remove this comment to see the full error message
 var sockets = {};
 
+// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'getSockets... Remove this comment to see the full error message
 async function getSockets() {
   var promises = [];
 
@@ -10,16 +13,18 @@ async function getSockets() {
   promises.push(readProcFile("tcp6"));
   promises.push(readProcFile("udp6"));
 
+  // @ts-expect-error ts-migrate(2585) FIXME: 'Promise' only refers to a type, but is being used... Remove this comment to see the full error message
   await Promise.all(promises);
   return sockets;
 }
 
-async function readProcFile(file) {
+// @ts-expect-error ts-migrate(2705) FIXME: An async function or method in ES5/ES3 requires th... Remove this comment to see the full error message
+async function readProcFile(file: any) {
   let content = fs.readFileSync("/proc/net/" + file, "utf8");
   parseSockets(content, file);
 }
 
-function parseSockets(data, type) {
+function parseSockets(data: any, type: any) {
   let lines = data.split(/\r\n|\r|\n/);
   lines.shift();
 
@@ -58,18 +63,19 @@ function parseSockets(data, type) {
   }
 }
 
-function hexToDecimal(str) {
+function hexToDecimal(str: any) {
+  // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'number' is not assignable to par... Remove this comment to see the full error message
   return parseInt(Number("0x" + str), 10);
 }
 
-function formatIPv4(line) {
+function formatIPv4(line: any) {
   line = line.split(":");
   let hexAddress = line[0];
   let hexPort = line[1];
 
   let hexArray = hexAddress
     .split(/(..)/g)
-    .filter((s) => s)
+    .filter((s: any) => s)
     .map(hexToDecimal);
   hexArray.reverse();
 
@@ -85,14 +91,14 @@ function formatIPv4(line) {
   return [address, port];
 }
 
-function formatIPv6(line) {
+function formatIPv6(line: any) {
   line = line.split(":");
   let hexAddress = line[0];
   let hexPort = line[1];
 
-  let hexArray = hexAddress.split(/(....)/g).filter((s) => s);
-  hexArray.forEach(function (hex, i) {
-    hexArray[i] = hex.split(/(..)/g).filter((s) => s);
+  let hexArray = hexAddress.split(/(....)/g).filter((s: any) => s);
+  hexArray.forEach(function (hex: any, i: any) {
+    hexArray[i] = hex.split(/(..)/g).filter((s: any) => s);
     hexArray[i].reverse();
     hexArray[i] = hexArray[i].join("");
   });
@@ -115,11 +121,11 @@ function formatIPv6(line) {
     hexArray = hexArray[6] + hexArray[7];
     address = hexArray
       .split(/(..)/g)
-      .filter((s) => s)
+      .filter((s: any) => s)
       .map(hexToDecimal)
       .join(".");
   } else {
-    hexArray.forEach(function (hex, i) {
+    hexArray.forEach(function (hex: any, i: any) {
       // Notation shortening
       hex = parseInt(hex, 16);
       hexArray[i] = hex == "0000" ? "" : hexArray[i];
@@ -131,7 +137,7 @@ function formatIPv6(line) {
   return [address, port];
 }
 
-function formatRxTx(line) {
+function formatRxTx(line: any) {
   line = line.split(":");
   let rx = hexToDecimal(line[0]) + "";
   let tx = hexToDecimal(line[1]) + "";
@@ -139,7 +145,7 @@ function formatRxTx(line) {
   return [rx, tx];
 }
 
-function formatState(hex) {
+function formatState(hex: any) {
   let state;
 
   switch (hex) {
@@ -184,4 +190,5 @@ function formatState(hex) {
   return state;
 }
 
+// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
 module.exports = getSockets;

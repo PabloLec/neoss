@@ -1,5 +1,5 @@
-var lastSort;
-var lastScroll;
+var lastSort: any;
+var lastScroll: any;
 var ascending = false;
 
 /**
@@ -10,7 +10,7 @@ var ascending = false;
  * @param  {int} currentIndex - Current index, returned if unsuccessful
  * @return {int} - Index to be selected
  */
-function retrieveSocket(socket, data, currentIndex) {
+function retrieveSocket(socket: any, data: any, currentIndex: any) {
   if (socket == null) {
     return currentIndex;
   }
@@ -45,7 +45,7 @@ function retrieveSocket(socket, data, currentIndex) {
  * @param  {Array} data - Array of lines
  * @return {Array} - Sorted array of lines
  */
-function sortBy(column, data) {
+function sortBy(column: any, data: any) {
   if (column == null && lastSort == null) {
     return data;
   } else if (column == null) {
@@ -56,19 +56,19 @@ function sortBy(column, data) {
 
   lastSort = column;
 
-  const sort = (key, numeric = false) => {
+  const sort = (key: any, numeric = false) => {
     if (ascending && numeric) {
-      data.sort((a, b) => (parseInt(a[key]) > parseInt(b[key]) ? 1 : -1));
+      data.sort((a: any, b: any) => (parseInt(a[key]) > parseInt(b[key]) ? 1 : -1));
     } else if (!ascending && numeric) {
-      data.sort((a, b) => (parseInt(a[key]) < parseInt(b[key]) ? 1 : -1));
+      data.sort((a: any, b: any) => (parseInt(a[key]) < parseInt(b[key]) ? 1 : -1));
     } else if (key == "users" && ascending) {
-      data.sort((a, b) => (a[key].text > b[key].text ? 1 : -1));
+      data.sort((a: any, b: any) => (a[key].text > b[key].text ? 1 : -1));
     } else if (key == "users") {
-      data.sort((a, b) => (a[key].text < b[key].text ? 1 : -1));
+      data.sort((a: any, b: any) => (a[key].text < b[key].text ? 1 : -1));
     } else if (ascending) {
-      data.sort((a, b) => (a[key] > b[key] ? 1 : -1));
+      data.sort((a: any, b: any) => (a[key] > b[key] ? 1 : -1));
     } else {
-      data.sort((a, b) => (a[key] < b[key] ? 1 : -1));
+      data.sort((a: any, b: any) => (a[key] < b[key] ? 1 : -1));
     }
   };
 
@@ -112,7 +112,7 @@ function sortBy(column, data) {
  * @param  {Array} screenLines - Complete array of table lines
  * @return {[int, int]} - Lines index range to be displayed
  */
-function getScroll(row, screenLines) {
+function getScroll(row: any, screenLines: any) {
   if (lastScroll === undefined) {
     lastScroll = [0, screenLines - 1];
   }
@@ -122,10 +122,14 @@ function getScroll(row, screenLines) {
   if (row >= lastScroll[0] && row < lastScroll[1]) {
     newScroll = lastScroll;
   } else if (row < lastScroll[0]) {
+    // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'diff'.
     diff = lastScroll[0] - row;
+    // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'diff'.
     newScroll = [lastScroll[0] - diff, lastScroll[1] - diff];
   } else if (row >= lastScroll[1]) {
+    // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'diff'.
     diff = row - lastScroll[1] + 1;
+    // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'diff'.
     newScroll = [lastScroll[0] + diff, lastScroll[1] + diff];
   }
 
@@ -133,4 +137,5 @@ function getScroll(row, screenLines) {
   return newScroll;
 }
 
+// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
 module.exports = { sortBy, retrieveSocket, getScroll };

@@ -1,3 +1,4 @@
+// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
 const whoisJson = require("whois-json");
 
 /**
@@ -6,11 +7,14 @@ const whoisJson = require("whois-json");
  * @param  {Object} data - Whois object
  * @return {string} - Result text
  */
-function toString(data) {
+function toString(data: any) {
+  // @ts-expect-error ts-migrate(2552) FIXME: Cannot find name 'text'. Did you mean 'Text'?
   text = "";
   for (const key in data) {
+    // @ts-expect-error ts-migrate(2552) FIXME: Cannot find name 'text'. Did you mean 'Text'?
     text += `${key}: ${data[key]}\n`;
   }
+  // @ts-expect-error ts-migrate(2552) FIXME: Cannot find name 'text'. Did you mean 'Text'?
   return text;
 }
 
@@ -20,7 +24,8 @@ function toString(data) {
  * @param  {string} domain - Domain/IP to be searched
  * @return {string} - Result text
  */
-async function whois(domain) {
+// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'whois'.
+async function whois(domain: any) {
   // TODO: Parse reserved IP adresses
   var domainName = domain.split(".");
 
@@ -38,4 +43,5 @@ async function whois(domain) {
   return data;
 }
 
+// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
 module.exports = { whois };

@@ -1,11 +1,18 @@
+// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'blessed'.
 const blessed = require("neo-blessed"),
+  // @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'Node'.
   Node = blessed.Node,
+  // @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'Box'.
   Box = blessed.Box;
+// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'getStats'.
 const getStats = require("src/utils/getStats");
+// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'helper'.
 const helper = require("src/utils/helper");
+// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'popups'.
 const popups = require("src/ui/popups");
 
-function Table(options) {
+// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'Table'.
+function Table(this: any, options: any) {
   var self = this;
 
   if (!(this instanceof Node)) {
@@ -23,85 +30,94 @@ function Table(options) {
 
   Box.call(this, options);
 
-  this.pad = options.pad != null ? options.pad : 2;
+  (this as any).pad = options.pad != null ? options.pad : 2;
 
-  this.selected = [0, 0];
-  this.currentSocket = null;
-  this.table = [];
-  this.popupVisible = false;
-  this.screenIsLocked = false;
+  (this as any).selected = [0, 0];
+  (this as any).currentSocket = null;
+  (this as any).table = [];
+  (this as any).popupVisible = false;
+  (this as any).screenIsLocked = false;
 
-  this.setData(options.rows || options.data);
+  (this as any).setData(options.rows || options.data);
 
-  this.on("focus", function () {
+  (this as any).on("focus", function () {
     popups.focusPopup();
-  });
+});
 
-  this.on("resize", function () {
+  (this as any).on("resize", function (this: any) {
     this.setData(self.table);
     self.screen.render();
-  });
+});
 
-  this.key(["left"], function (ch, key) {
-    if (this.screenIsLocked) return;
+  (this as any).key(["left"], function (this: any, ch: any, key: any) {
+    if (this.screenIsLocked)
+        return;
     if (this.selected[1] - 1 == -1) {
-      return;
+        return;
     }
     this.selected = [this.selected[0], this.selected[1] - 1];
     this.setData(this.table);
     self.screen.render();
-  });
+});
 
-  this.key(["right"], function (ch, key) {
-    if (this.screenIsLocked) return;
+  (this as any).key(["right"], function (this: any, ch: any, key: any) {
+    if (this.screenIsLocked)
+        return;
+    // @ts-expect-error ts-migrate(2550) FIXME: Property 'values' does not exist on type 'ObjectCo... Remove this comment to see the full error message
     if (this.selected[1] + 1 == Object.values(this.table.data[this.selected[0]]).length - 1) {
-      return;
+        return;
     }
     this.selected = [this.selected[0], this.selected[1] + 1];
     this.setData(this.table);
     self.screen.render();
-  });
+});
 
-  this.key(["up"], function (ch, key) {
-    if (this.screenIsLocked) return;
+  (this as any).key(["up"], function (this: any, ch: any, key: any) {
+    if (this.screenIsLocked)
+        return;
     if (this.selected[0] - 1 == -1) {
-      return;
+        return;
     }
     this.selected = [this.selected[0] - 1, this.selected[1]];
     this.currentSocket = this.table.data[this.selected[0]];
     this.setData(this.table);
     self.screen.render();
-  });
+});
 
-  this.key(["down"], function (ch, key) {
-    if (this.screenIsLocked) return;
+  (this as any).key(["down"], function (this: any, ch: any, key: any) {
+    if (this.screenIsLocked)
+        return;
     if (this.selected[0] + 1 == this.table.data.length) {
-      return;
+        return;
     }
     this.selected = [this.selected[0] + 1, this.selected[1]];
     this.currentSocket = this.table.data[this.selected[0]];
     this.setData(this.table);
     self.screen.render();
-  });
+});
 
-  this.key(["s", "S"], function (ch, key) {
-    if (this.screenIsLocked) return;
+  (this as any).key(["s", "S"], function (this: any, ch: any, key: any) {
+    if (this.screenIsLocked)
+        return;
     this.table.data = helper.sortBy(this.selected[1], this.table.data);
     this.selected = [helper.retrieveSocket(this.currentSocket, this.table.data, this.selected[0]), this.selected[1]];
     this.setData(this.table);
     self.screen.render();
-  });
+});
 
-  this.key(["enter"], function (ch, key) {
-    if (this.screenIsLocked) return;
+  (this as any).key(["enter"], function (this: any, ch: any, key: any) {
+    if (this.screenIsLocked)
+        return;
+    // @ts-expect-error ts-migrate(2550) FIXME: Property 'values' does not exist on type 'ObjectCo... Remove this comment to see the full error message
     let content = Object.values(this.table.data[this.selected[0]])[this.selected[1]];
     popups.handlePopup(this.screen, this.selected[1], content);
-  });
+});
 
-  this.key(["r", "R"], function (ch, key) {
-    if (this.screenIsLocked) return;
+  (this as any).key(["r", "R"], function (this: any, ch: any, key: any) {
+    if (this.screenIsLocked)
+        return;
     getStats(this.screen, this);
-  });
+});
 }
 
 Table.prototype.__proto__ = Box.prototype;
@@ -110,14 +126,14 @@ Table.prototype.type = "table";
 
 Table.prototype._calculateMaxes = function () {
   var self = this;
-  var maxes = [];
+  var maxes: any = [];
 
   if (this.detached) return;
 
   this.rows = this.rows || [];
 
-  this.rows.forEach(function (row) {
-    row.forEach(function (cell, i) {
+  this.rows.forEach(function (row: any) {
+    row.forEach(function (cell: any, i: any) {
       var clen = self.strWidth(cell);
       if (!maxes[i] || maxes[i] < clen) {
         maxes[i] = clen;
@@ -125,6 +141,7 @@ Table.prototype._calculateMaxes = function () {
     });
   });
 
+  // @ts-expect-error ts-migrate(7006) FIXME: Parameter 'total' implicitly has an 'any' type.
   var total = maxes.reduce(function (total, max) {
     return total + max;
   }, 0);
@@ -139,6 +156,7 @@ Table.prototype._calculateMaxes = function () {
     var missing = this.width - total;
     var w = (missing / maxes.length) | 0;
     var wr = missing % maxes.length;
+    // @ts-expect-error ts-migrate(7006) FIXME: Parameter 'max' implicitly has an 'any' type.
     maxes = maxes.map(function (max, i) {
       if (i === maxes.length - 1) {
         return max + w + wr;
@@ -146,6 +164,7 @@ Table.prototype._calculateMaxes = function () {
       return max + w;
     });
   } else {
+    // @ts-expect-error ts-migrate(7006) FIXME: Parameter 'max' implicitly has an 'any' type.
     maxes = maxes.map(function (max) {
       return max + self.pad;
     });
@@ -154,7 +173,7 @@ Table.prototype._calculateMaxes = function () {
   return (this._maxes = maxes);
 };
 
-Table.prototype.setRows = Table.prototype.setData = function (table) {
+Table.prototype.setRows = Table.prototype.setData = function (table: any) {
   if (typeof table == "undefined") {
     return;
   }
@@ -169,8 +188,10 @@ Table.prototype.setRows = Table.prototype.setData = function (table) {
   if (Array.isArray(table)) {
     this.rows = table || [];
   } else {
-    var rows = [];
-    Object.values(table.data).forEach(function (d) {
+    var rows: any = [];
+    // @ts-expect-error ts-migrate(2550) FIXME: Property 'values' does not exist on type 'ObjectCo... Remove this comment to see the full error message
+    Object.values(table.data).forEach(function (d: any) {
+      // @ts-expect-error ts-migrate(2550) FIXME: Property 'values' does not exist on type 'ObjectCo... Remove this comment to see the full error message
       let row = Object.values(d);
       // Remove inode and user cells
       delete row[8];
@@ -206,9 +227,9 @@ Table.prototype.setRows = Table.prototype.setData = function (table) {
   }
   this.screenIsLocked = false;
 
-  this.rows.forEach(function (row, i) {
+  this.rows.forEach(function (row: any, i: any) {
     var isFooter = i === self.rows.length - 1;
-    row.forEach(function (cell, i) {
+    row.forEach(function (cell: any, i: any) {
       var width = self._maxes[i];
       var clen = self.strWidth(cell);
 
@@ -269,8 +290,8 @@ Table.prototype.render = function () {
   var lines = this.screen.lines,
     xi = coords.xi,
     yi = coords.yi,
-    rx,
-    ry,
+    rx: any,
+    ry: any,
     i;
 
   var dattr = this.sattr(this.style),
@@ -301,7 +322,7 @@ Table.prototype.render = function () {
   for (i = 0; i < self.rows.length + 1; i++) {
     if (!lines[yi + ry]) break;
     rx = 0;
-    self._maxes.forEach(function (max, i) {
+    self._maxes.forEach(function (max: any, i: any) {
       rx += max;
       if (i === 0) {
         if (!lines[yi + ry][xi + 0]) return;
@@ -392,7 +413,7 @@ Table.prototype.render = function () {
   for (ry = 1; ry < self.rows.length * 2; ry++) {
     if (!lines[yi + ry]) break;
     rx = 0;
-    self._maxes.slice(0, -1).forEach(function (max) {
+    self._maxes.slice(0, -1).forEach(function (max: any) {
       rx += max;
       if (!lines[yi + ry][xi + rx + 1]) return;
       if (ry % 2 !== 0) {
@@ -411,7 +432,7 @@ Table.prototype.render = function () {
       }
     });
     rx = 1;
-    self._maxes.forEach(function (max) {
+    self._maxes.forEach(function (max: any) {
       while (max--) {
         if (ry % 2 === 0) {
           if (!lines[yi + ry]) break;
@@ -434,4 +455,5 @@ Table.prototype.render = function () {
   return coords;
 };
 
+// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
 module.exports = Table;
