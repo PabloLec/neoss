@@ -1,7 +1,7 @@
 import { Node, Box } from "neo-blessed";
 import { readFile } from "fs";
 import { join } from "path";
-import { whois } from "src/utils/whois";
+import { whois } from "../utils/whois";
 var screen: any;
 var currentBox: any = null;
 var strings = {};
@@ -9,7 +9,7 @@ const stringsNames = ["ports", "protocols", "queues", "states"];
 
 // Load strings
 stringsNames.forEach(function (name) {
-  readFile(join(__dirname, "..", "strings", name + ".json"), (err: any, data: any) => {
+  readFile(join("src", "strings", name + ".json"), (err: any, data: any) => {
     if (err) throw err;
     strings[name] = JSON.parse(data);
   });

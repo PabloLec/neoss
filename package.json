@@ -7,9 +7,10 @@
    },
    "version": "1.0.1",
    "description": "",
-   "main": "src/main.ts",
+   "main": "build/main.js",
+   "types": "build/main.d.ts",
    "bin": {
-      "neoss": "src/main.ts"
+      "neoss": "build/main.js"
    },
    "license": "BSD 3-Clause License",
    "keywords": [

@@ -1,9 +1,9 @@
 const blessed = require("neo-blessed"),
   Node = blessed.Node,
   Box = blessed.Box;
-const getStats = require("src/utils/getStats");
-const helper = require("src/utils/helper");
-const popups = require("src/ui/popups");
+const getStats = require("../utils/getStats");
+const helper = require("../utils/helper");
+const popups = require("../ui/popups");
 
 function Table(options) {
   var self = this;

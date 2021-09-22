@@ -1,9 +1,9 @@
 import { reverse } from "dns";
-import { setData, refreshScreen } from "src/ui/screen";
-import { getSockets } from "src/utils/sockets";
-import { getUsedSockets, getUserData } from "src/utils/users";
-import { sortBy } from "src/utils/helper";
-import { loadingPopup, removePopup } from "src/ui/popups";
+import { setData, refreshScreen } from "../ui/screen";
+import { getSockets } from "./sockets";
+import { getUsedSockets, getUserData } from "./users";
+import { sortBy } from "./helper";
+import { loadingPopup, removePopup } from "../ui/popups";
 
 var usedSockets: {};
 

@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 
 import { Screen } from "neo-blessed";
-import Table from "src/ui/table";
-import { setDefaultScreen } from "src/ui/popups";
+import Table from "../ui/table";
+import { setDefaultScreen } from "../ui/popups";
 
 var mainScreen: Screen;
 var table: Table;
