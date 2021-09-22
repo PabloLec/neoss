@@ -1,26 +1,21 @@
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'fs'.
-const fs = require("fs");
+import { readFileSync } from "fs"
 
-// @ts-expect-error ts-migrate(2403) FIXME: Subsequent variable declarations must have the sam... Remove this comment to see the full error message
 var sockets = {};
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'getSockets... Remove this comment to see the full error message
-async function getSockets() {
-  var promises = [];
+export async function getSockets() {
+  var promises : Promise<void>[] = [];
 
   promises.push(readProcFile("tcp"));
   promises.push(readProcFile("udp"));
   promises.push(readProcFile("tcp6"));
   promises.push(readProcFile("udp6"));
 
-  // @ts-expect-error ts-migrate(2585) FIXME: 'Promise' only refers to a type, but is being used... Remove this comment to see the full error message
   await Promise.all(promises);
   return sockets;
 }
 
-// @ts-expect-error ts-migrate(2705) FIXME: An async function or method in ES5/ES3 requires th... Remove this comment to see the full error message
 async function readProcFile(file: any) {
-  let content = fs.readFileSync("/proc/net/" + file, "utf8");
+  let content = readFileSync("/proc/net/" + file, "utf8");
   parseSockets(content, file);
 }
 
@@ -33,7 +28,7 @@ function parseSockets(data: any, type: any) {
       continue;
     }
     let elements = line.trim().split(/\s+/);
-    let inode = elements[9];
+    let inode: string = elements[9];
 
     sockets[inode] = {};
     sockets[inode].protocol = type.slice(0, 3);
@@ -64,8 +59,7 @@ function parseSockets(data: any, type: any) {
 }
 
 function hexToDecimal(str: any) {
-  // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'number' is not assignable to par... Remove this comment to see the full error message
-  return parseInt(Number("0x" + str), 10);
+  return parseInt(Number("0x" + str)+"", 10);
 }
 
 function formatIPv4(line: any) {
@@ -189,6 +183,3 @@ function formatState(hex: any) {
 
   return state;
 }
-
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
-module.exports = getSockets;

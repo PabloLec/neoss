@@ -1,27 +1,16 @@
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'blessed'.
-const blessed = require("neo-blessed"),
-  // @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'Node'.
-  Node = blessed.Node,
-  // @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'Box'.
-  Box = blessed.Box;
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'fs'.
-const fs = require("fs");
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
-const path = require("path");
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'whois'.
-const whois = require("src/utils/whois");
-// @ts-expect-error ts-migrate(2403) FIXME: Subsequent variable declarations must have the sam... Remove this comment to see the full error message
-var screen;
+import { Node, Box } from "neo-blessed";
+import { readFile } from "fs"
+import { join } from "path"
+import { whois } from "src/utils/whois"
+var screen: any;
 var currentBox: any = null;
 var strings = {};
 const stringsNames = ["ports", "protocols", "queues", "states"];
 
 // Load strings
 stringsNames.forEach(function (name) {
-  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name '__dirname'.
-  fs.readFile(path.join(__dirname, "..", "strings", name + ".json"), (err: any, data: any) => {
+  readFile(join(__dirname, "..", "strings", name + ".json"), (err: any, data: any) => {
     if (err) throw err;
-    // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
     strings[name] = JSON.parse(data);
   });
 });
@@ -29,7 +18,7 @@ stringsNames.forEach(function (name) {
 /**
  * If a popup exists in currentBox var, focus it.
  */
-function focusPopup() {
+export function focusPopup() {
   if (currentBox != null) {
     currentBox.focus();
   }
@@ -38,7 +27,7 @@ function focusPopup() {
 /**
  * Removes popup currently stored in currentBox var and returns focus to main table.
  */
-function removePopup() {
+export function removePopup() {
   if (currentBox == null) {
     return;
   }
@@ -61,8 +50,7 @@ function createPopup(content: any, escapable = true) {
   currentBox = createBox(content);
   if (escapable) {
     currentBox.key(["enter", "escape"], function (ch: any, key: any) {
-      // @ts-expect-error ts-migrate(2554) FIXME: Expected 0 arguments, but got 1.
-      removePopup(screen);
+      removePopup();
     });
   }
   (screen as any).append(currentBox);
@@ -77,24 +65,20 @@ function createPopup(content: any, escapable = true) {
  * @param  {int} column - Column number to determine content type
  * @param  {string} content - Table cell content
  */
-function handlePopup(mainScreen: any, column: any, content: any) {
+ export function handlePopup(mainScreen: any, column: any, content: any) {
   screen = mainScreen;
 
   switch (column) {
     case 0:
-      // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
       createPopup(strings["protocols"][content]);
       break;
     case 1:
-      // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
       createPopup(strings["states"][content]);
       break;
     case 2:
-      // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
       createPopup(strings["queues"]["receiveQueue"]);
       break;
     case 3:
-      // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
       createPopup(strings["queues"]["sendQueue"]);
       break;
     case 4:
@@ -104,7 +88,7 @@ function handlePopup(mainScreen: any, column: any, content: any) {
       break;
     case 6:
       createPopup("Wait for Whois...", false);
-      whois.whois(content).then(function (response: any) {
+      whois(content).then(function (response: any) {
         removePopup();
         createPopup(response);
       });
@@ -148,7 +132,7 @@ function createBox(content: any) {
     scrollable = false;
   }
 
-  return blessed.box({
+  return Box({
     top: "center",
     left: "center",
     width: "shrink",
@@ -177,7 +161,6 @@ function createBox(content: any) {
  * @returns {string} - Popup text content
  */
 function getPortText(port: any) {
-  // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
   let assignment = strings["ports"][port];
   if (assignment == undefined) {
     return "This port is not assigned";
@@ -198,31 +181,25 @@ function getPortText(port: any) {
 function getUsersText(users: any) {
   if (users.text == "/") {
     return null;
+
   }
 
-  // @ts-expect-error ts-migrate(2552) FIXME: Cannot find name 'text'. Did you mean 'Text'?
-  text = "";
-  length = Object.keys(users).length - 1;
+  var text: string = "";
+  var length: number = Object.keys(users).length - 1;
   for (let i = 0; i < length; i++) {
     if (length > 1) {
-      // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'text'.
+
       text += "{bold} - - User " + (i + 1) + " - -{/bold}\n";
     }
-    // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'text'.
     text += "{bold}Name:{/bold} " + users[i].name + "\n";
-    // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'text'.
     text += "{bold}PID:{/bold} " + users[i].pid + "\n";
-    // @ts-expect-error ts-migrate(2552) FIXME: Cannot find name 'text'. Did you mean 'Text'?
     text += "{bold}Owner:{/bold} " + users[i].owner + "\n";
-    // @ts-expect-error ts-migrate(2552) FIXME: Cannot find name 'text'. Did you mean 'Text'?
     text += "{bold}Command:{/bold} " + users[i].cmdline.trim() + "\n";
     if (i < length - 1) {
-      // @ts-expect-error ts-migrate(2552) FIXME: Cannot find name 'text'. Did you mean 'Text'?
       text += "\n\n";
     }
   }
 
-  // @ts-expect-error ts-migrate(2552) FIXME: Cannot find name 'text'. Did you mean 'Text'?
   return text;
 }
 
@@ -231,10 +208,7 @@ function getUsersText(users: any) {
  *
  * @param  {blessed.screen} mainScreen - Main screen object to display popup on
  */
-function loadingPopup(mainScreen: any) {
+export function loadingPopup(mainScreen: any) {
   screen = mainScreen;
   createPopup("Loading{blink}...{/blink}", false);
 }
-
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
-module.exports = { handlePopup, focusPopup, loadingPopup, removePopup };
