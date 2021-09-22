@@ -9,7 +9,7 @@ const stringsNames = ["ports", "protocols", "queues", "states"];
 
 // Load strings
 stringsNames.forEach(function (name) {
-  readFile(join("src", "strings", name + ".json"), (err: any, data: any) => {
+  readFile(join(__dirname, "..", "..", "src", "strings", name + ".json"), (err: any, data: any) => {
     if (err) throw err;
     strings[name] = JSON.parse(data);
   });
