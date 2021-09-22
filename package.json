@@ -5,7 +5,7 @@
       "email": "pablolec@pm.me",
       "url": "https://github.com/PabloLec"
    },
-   "version": "1.0.1",
+   "version": "1.1.0",
    "description": "",
    "main": "build/main.js",
    "types": "build/main.d.ts",
@@ -41,7 +41,6 @@
    },
    "devDependencies": {
       "cheerio": "^1.0.0-rc.10",
-      "nodemon": "^2.0.12",
       "pino": "^6.13.2",
       "ts-node": "^10.2.1",
       "typescript": "^4.2.4"
