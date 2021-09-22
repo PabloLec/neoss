@@ -2,7 +2,12 @@ import { readFileSync } from "fs";
 
 var sockets = {};
 
-export async function getSockets() {
+/**
+ * Drive async workflow for socket file descriptors acquisition.
+ *
+ * @returns - Sockets map {inode:statistics,}
+ */
+export async function getSockets(): Promise<{}> {
   let promises: Promise<void>[] = [];
 
   promises.push(readProcFile("tcp"));
@@ -14,11 +19,12 @@ export async function getSockets() {
   return sockets;
 }
 
-async function readProcFile(file: string) {
-  let content = readFileSync("/proc/net/" + file, "utf8");
-  parseSockets(content, file);
-}
-
+/**
+ * Parse file content data for relevant socket statistics.
+ *
+ * @param data - Raw file text content
+ * @param type - Transport protocol and version number
+ */
 function parseSockets(data: string, type: string) {
   let lines = data.split(/\r\n|\r|\n/);
   lines.shift();
@@ -58,11 +64,13 @@ function parseSockets(data: string, type: string) {
   }
 }
 
-function hexToDecimal(str: string) {
-  return parseInt(Number("0x" + str) + "", 10);
-}
-
-function formatIPv4(line: string) {
+/**
+ * Format unix hex representation of IPv4 to its regular expression.
+ *
+ * @param line - Raw hex representation
+ * @returns - Formated address
+ */
+function formatIPv4(line: string): (string | null)[] {
   let lineMap = line.split(":");
   let hexAddress = lineMap[0];
   let hexPort = lineMap[1];
@@ -85,7 +93,13 @@ function formatIPv4(line: string) {
   return [address, port];
 }
 
-function formatIPv6(line: string) {
+/**
+ * Format unix hex representation of IPv6 to its regular expression.
+ *
+ * @param line - Raw hex representation
+ * @returns - Formated address
+ */
+function formatIPv6(line: string): (string | null)[] {
   let lineMap = line.split(":");
   let hexAddress = lineMap[0];
   let hexPort = lineMap[1];
@@ -131,7 +145,13 @@ function formatIPv6(line: string) {
   return [address, port];
 }
 
-function formatRxTx(line: string) {
+/**
+ * Format receiveQueue and sendQueue hex representation to decimal.
+ *
+ * @param line - Raw hex representation
+ * @returns - Decimal values
+ */
+function formatRxTx(line: string): string[] {
   let lineMap = line.split(":");
   let rx = hexToDecimal(lineMap[0]) + "";
   let tx = hexToDecimal(lineMap[1]) + "";
@@ -139,7 +159,13 @@ function formatRxTx(line: string) {
   return [rx, tx];
 }
 
-function formatState(hex: string) {
+/**
+ * Get a definition for socket state from hex value
+ *
+ * @param hex - Raw hex value
+ * @returns - State definition
+ */
+function formatState(hex: string): string {
   let state = "";
 
   switch (hex) {
@@ -182,4 +208,24 @@ function formatState(hex: string) {
   }
 
   return state;
+}
+
+/**
+ * Read process file content and initiate its parsing.
+ *
+ * @param file - File name (process inode)
+ */
+async function readProcFile(file: string) {
+  let content = readFileSync("/proc/net/" + file, "utf8");
+  parseSockets(content, file);
+}
+
+/**
+ * Convert a hex string representation to its decimal value.
+ *
+ * @param str - Hex string representation
+ * @returns - Decimal value
+ */
+function hexToDecimal(str: string): number {
+  return parseInt(Number("0x" + str) + "", 10);
 }

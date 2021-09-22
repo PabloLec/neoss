@@ -9,6 +9,9 @@ var usedSockets: {};
 
 var socketList: any[] = [];
 
+/**
+ * Drive async workflow for full socket statistics acquisition.
+ */
 export async function getStats() {
   let socketListPromise: Promise<{}> = getSockets();
   let usedSocketsPromise: Promise<{}> = getUsedSockets();
@@ -38,24 +41,12 @@ export async function getStats() {
   reverseNSLookup();
 }
 
-async function reverseNSLookup() {
-  for (let i = 0; i < socketList.length; i++) {
-    try {
-      reverse(socketList[i].peerAddress, (err: Error | void | null, result: string[]) => {
-        if (!err) {
-          if (result.length == 0 || result[0].length == 0) {
-            return;
-          }
-          socketList[i].peerAddress = result[0];
-          refreshScreen();
-        }
-      });
-    } catch {
-      continue;
-    }
-  }
-}
-
+/**
+ * Create user objects for raw string data.
+ *
+ * @param socket - Socket to parse user(s) from
+ * @param i - Index in socket list
+ */
 async function parseUsersData(socket: string, i: number) {
   for (let j = 0; j < usedSockets[socket].length; j++) {
     socketList[i].users[j] = {};
@@ -72,5 +63,26 @@ async function parseUsersData(socket: string, i: number) {
     socketList[i].users.text = socketList[i].users[0].name;
   } else {
     socketList[i].users.text = usedSockets[socketList[i].inode].length + " users";
+  }
+}
+
+/**
+ * Query reverse lookups for all stored IPs.
+ */
+async function reverseNSLookup() {
+  for (let i = 0; i < socketList.length; i++) {
+    try {
+      reverse(socketList[i].peerAddress, (err: Error | void | null, result: string[]) => {
+        if (!err) {
+          if (result.length == 0 || result[0].length == 0) {
+            return;
+          }
+          socketList[i].peerAddress = result[0];
+          refreshScreen();
+        }
+      });
+    } catch {
+      continue;
+    }
   }
 }

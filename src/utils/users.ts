@@ -3,11 +3,12 @@ import { execSync } from "child_process";
 
 var socketMap: {};
 
-function timeout(ms: number) {
-  return new Promise((resolve: any) => setTimeout(resolve, ms));
-}
-
-export async function getUsedSockets() {
+/**
+ * Fetch in-use sockets and query their users statistics.
+ *
+ * @returns Map of used sockets and their users
+ */
+export async function getUsedSockets(): Promise<{}> {
   socketMap = {};
   var processes: string[] = [];
   var files: string[] = readdirSync("/proc/");
@@ -28,6 +29,11 @@ export async function getUsedSockets() {
   return socketMap;
 }
 
+/**
+ * Get users statistics for a given socket.
+ *
+ * @param proc - Socket inode
+ */
 async function getProcSockets(proc: string) {
   let fd = "/proc/" + proc + "/fd/";
 
@@ -62,11 +68,13 @@ async function getProcSockets(proc: string) {
   });
 }
 
-function isNumeric(str: string) {
-  return !isNaN(parseInt(str));
-}
-
-export async function getUserData(user: string) {
+/**
+ * Get detailed information about given user.
+ *
+ * @param user - User PID
+ * @returns - User name, owner and init command line
+ */
+export async function getUserData(user: string): Promise<string[]> {
   try {
     var status: string = readFileSync("/proc/" + user + "/status", "utf8");
   } catch (ENOENT) {
@@ -87,4 +95,24 @@ export async function getUserData(user: string) {
   }
 
   return [name, owner.trim(), cmdline];
+}
+
+/**
+ * Check if file descriptor name is numeric to determine if it is related to a process.
+ *
+ * @param str - File name
+ * @returns - Is numeric
+ */
+function isNumeric(str: string): boolean {
+  return !isNaN(parseInt(str));
+}
+
+/**
+ * Timeout function to limit fs wait time.
+ *
+ * @param ms - Time to wait in ms
+ * @returns - void
+ */
+function timeout(ms: number): Promise<void> {
+  return new Promise((resolve: any) => setTimeout(resolve, ms));
 }

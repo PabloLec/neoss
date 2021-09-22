@@ -1,8 +1,16 @@
-var lastSort: any;
+var lastSort: number;
 var lastScroll: any;
 var ascending = false;
 
-export function retrieveSocket(socket: any, data: string, currentIndex: number) {
+/**
+ * Try to retrieve previously selected line after table refresh.
+ *
+ * @param socket - Socket object to be retrieved
+ * @param data - Refreshed table data to be parsed
+ * @param currentIndex - Current selected line number, returned if no match
+ * @returns Line number to be highlighted
+ */
+export function retrieveSocket(socket: any, data: string, currentIndex: number): number {
   if (socket == null) {
     return currentIndex;
   }
@@ -30,7 +38,14 @@ export function retrieveSocket(socket: any, data: string, currentIndex: number) 
   return currentIndex;
 }
 
-export function sortBy(column: number | null, data: string[]) {
+/**
+ * Handle socket sort.
+ *
+ * @param column Currently selected column
+ * @param data Table data
+ * @returns Sorted data
+ */
+export function sortBy(column: number | null, data: string[]): string[] {
   if (column == null && lastSort == null) {
     return data;
   } else if (column == null) {
@@ -90,12 +105,19 @@ export function sortBy(column: number | null, data: string[]) {
   return data;
 }
 
-export function getScroll(row: number, screenLines: number) {
+/**
+ * Get lines index range to be displayed after scroll.
+ *
+ * @param row - Currently selected line index
+ * @param screenLines - Complete array of table lines
+ * @returns - Lines index range to be displayed
+ */
+export function getScroll(row: number, screenLines: number): number[] {
   if (lastScroll === undefined) {
     lastScroll = [0, screenLines - 1];
   }
 
-  let newScroll: number[] | null = null;
+  let newScroll = lastScroll;
   let diff: number;
 
   if (row >= lastScroll[0] && row < lastScroll[1]) {
