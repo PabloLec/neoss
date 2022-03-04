@@ -36,7 +36,7 @@
       "ansi-regex": "^6.0.0",
       "blessed": "^0.1.81",
       "neo-blessed": "^0.2.0",
-      "whois-json": "^2.0.4"
+      "whois-json": "^2.1.0"
    },
    "devDependencies": {
       "cheerio": "^1.0.0-rc.10",
