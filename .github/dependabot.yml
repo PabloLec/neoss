@@ -1,7 +1,5 @@
 version: 2
 updates:
-
-  # Maintain dependencies for npm
   - package-ecosystem: "npm"
     directory: "/"
     schedule:
@@ -10,3 +8,9 @@ updates:
       - "PabloLec"
     commit-message:
       prefix: "npm"
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "daily"
+    assignees:
+      - "PabloLec"
