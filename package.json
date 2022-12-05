@@ -45,7 +45,6 @@
    },
    "devDependencies": {
       "cheerio": "^1.0.0-rc.10",
-      "pino": "^8.0.0",
       "ts-node": "^10.2.1",
       "typescript": "^4.2.4"
    }
