@@ -5,9 +5,9 @@ import { getUsedSockets, getUserData } from "./users";
 import { sortBy } from "./helper";
 import { loadingPopup, removePopup } from "../ui/popups";
 
-var usedSockets: {};
+let usedSockets: {};
 
-var socketList: any[] = [];
+let socketList: any[] = [];
 
 /**
  * Drive async workflow for full socket statistics acquisition.
@@ -38,7 +38,7 @@ export async function getStats() {
 
   setData(sortBy(null, socketList));
   removePopup();
-  reverseNSLookup();
+  await reverseNSLookup();
 }
 
 /**
@@ -70,19 +70,15 @@ async function parseUsersData(socket: string, i: number) {
  * Query reverse lookups for all stored IPs.
  */
 async function reverseNSLookup() {
-  for (let i = 0; i < socketList.length; i++) {
-    try {
-      reverse(socketList[i].peerAddress, (err: Error | void | null, result: string[]) => {
-        if (!err) {
-          if (result.length == 0 || result[0].length == 0) {
-            return;
-          }
-          socketList[i].peerAddress = result[0];
-          refreshScreen();
+  for (const element of socketList) {
+    reverse(element.peerAddress, (err: Error | void | null, result: string[]) => {
+      if (!err) {
+        if (result.length == 0 || result[0].length == 0) {
+          return;
         }
-      });
-    } catch {
-      continue;
-    }
+        element.peerAddress = result[0];
+        refreshScreen();
+      }
+    });
   }
 }

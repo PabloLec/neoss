@@ -1,6 +1,6 @@
-var lastSort: number;
-var lastScroll: any;
-var ascending = false;
+let lastSort: number;
+let lastScroll: any;
+let ascending = false;
 
 /**
  * Try to retrieve previously selected line after table refresh.
@@ -20,15 +20,13 @@ export function retrieveSocket(socket: any, data: string, currentIndex: number):
     let l: any = data[i];
     let s: any = socket;
 
-    if (s.inode != "0" && s.inode == l.inode) {
-      currentIndex = i;
-      break;
-    } else if (
-      s.localAddress == l.localAddress &&
-      s.localPort == l.localPort &&
-      s.peerAddress == l.peerAddress &&
-      s.peerPort == l.peerPort
-    ) {
+    let isSameInode = s.inode != "0" && s.inode == l.inode
+    let isSameOtherParams = s.localAddress == l.localAddress &&
+        s.localPort == l.localPort &&
+        s.peerAddress == l.peerAddress &&
+        s.peerPort == l.peerPort
+
+    if (isSameInode || isSameOtherParams) {
       currentIndex = i;
       break;
     }
@@ -36,6 +34,22 @@ export function retrieveSocket(socket: any, data: string, currentIndex: number):
   }
 
   return currentIndex;
+}
+
+function sortColumn(data: string[], key: string, numeric = false) {
+  if (ascending && numeric) {
+    data.sort((a: string, b: string) => (parseInt(a[key]) > parseInt(b[key]) ? 1 : -1));
+  } else if (!ascending && numeric) {
+    data.sort((a: string, b: string) => (parseInt(a[key]) < parseInt(b[key]) ? 1 : -1));
+  } else if (key == "users" && ascending) {
+    data.sort((a: string, b: string) => (a[key].text > b[key].text ? 1 : -1));
+  } else if (key == "users") {
+    data.sort((a: string, b: string) => (a[key].text < b[key].text ? 1 : -1));
+  } else if (ascending) {
+    data.sort((a: string, b: string) => (a[key] > b[key] ? 1 : -1));
+  } else {
+    data.sort((a: string, b: string) => (a[key] < b[key] ? 1 : -1));
+  }
 }
 
 /**
@@ -56,49 +70,35 @@ export function sortBy(column: number | null, data: string[]): string[] {
 
   lastSort = column;
 
-  const sort = (key: string, numeric = false) => {
-    if (ascending && numeric) {
-      data.sort((a: string, b: string) => (parseInt(a[key]) > parseInt(b[key]) ? 1 : -1));
-    } else if (!ascending && numeric) {
-      data.sort((a: string, b: string) => (parseInt(a[key]) < parseInt(b[key]) ? 1 : -1));
-    } else if (key == "users" && ascending) {
-      data.sort((a: string, b: string) => (a[key].text > b[key].text ? 1 : -1));
-    } else if (key == "users") {
-      data.sort((a: string, b: string) => (a[key].text < b[key].text ? 1 : -1));
-    } else if (ascending) {
-      data.sort((a: string, b: string) => (a[key] > b[key] ? 1 : -1));
-    } else {
-      data.sort((a: string, b: string) => (a[key] < b[key] ? 1 : -1));
-    }
-  };
+  
 
   switch (column) {
     case 0:
-      sort("protocol");
+      sortColumn(data, "protocol");
       break;
     case 1:
-      sort("state");
+      sortColumn(data,  "state");
       break;
     case 2:
-      sort("receiveQueue", true);
+      sortColumn(data,  "receiveQueue", true);
       break;
     case 3:
-      sort("sendQueue", true);
+      sortColumn(data,  "sendQueue", true);
       break;
     case 4:
-      sort("localAddress");
+      sortColumn(data,  "localAddress");
       break;
     case 5:
-      sort("localPort", true);
+      sortColumn(data,  "localPort", true);
       break;
     case 6:
-      sort("peerAddress");
+      sortColumn(data,  "peerAddress");
       break;
     case 7:
-      sort("peerPort", true);
+      sortColumn(data,  "peerPort", true);
       break;
     case 8:
-      sort("users");
+      sortColumn(data,  "users");
       break;
   }
 

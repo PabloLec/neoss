@@ -1,6 +1,6 @@
 import { readFileSync } from "fs";
 
-var sockets = {};
+let sockets = {};
 
 /**
  * Drive async workflow for socket file descriptors acquisition.
@@ -49,12 +49,10 @@ function parseSockets(data: string, type: string) {
       [sockets[inode].peerAddress, sockets[inode].peerPort] = formatIPv4(elements[2]);
     }
 
-    if (sockets[inode].localAddress == null || sockets[inode].peerAddress == null) {
-      // Remove sockets with unkown addresses
-      delete sockets[inode];
-      continue;
-    } else if (sockets[inode].localAddress == sockets[inode].peerAddress || sockets[inode].peerAddress == "localhost") {
-      // Remove loopback sockets
+    let isAddressNull = sockets[inode].localAddress == null || sockets[inode].peerAddress == null
+    let isAddressLocalhost = sockets[inode].localAddress == sockets[inode].peerAddress || sockets[inode].peerAddress == "localhost"
+
+    if (isAddressNull || isAddressLocalhost) {
       delete sockets[inode];
       continue;
     }
@@ -111,7 +109,7 @@ function formatIPv6(line: string): (string | null)[] {
     hexArray[i] = splitHex.join("");
   });
 
-  for (var i = 0; i < hexArray.length; i += 2) {
+  for (let i = 0; i < hexArray.length; i += 2) {
     [hexArray[i], hexArray[i + 1]] = [hexArray[i + 1], hexArray[i]];
   }
 

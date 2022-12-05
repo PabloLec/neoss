@@ -2,10 +2,10 @@
 
 import { Screen } from "neo-blessed";
 import Table from "../ui/table";
-import { setDefaultScreen } from "../ui/popups";
+import { setDefaultScreen } from "./popups";
 
-var mainScreen: Screen;
-var table: Table;
+let mainScreen: Screen;
+let table: Table;
 
 /**
  * Create main application blessed screen and table objects.

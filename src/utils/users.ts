@@ -1,7 +1,7 @@
 import { readdirSync, readFileSync, readlinkSync } from "fs";
 import { execSync } from "child_process";
 
-var socketMap: {};
+let socketMap: {};
 
 /**
  * Fetch in-use sockets and query their users statistics.
@@ -10,15 +10,15 @@ var socketMap: {};
  */
 export async function getUsedSockets(): Promise<{}> {
   socketMap = {};
-  var processes: string[] = [];
-  var files: string[] = readdirSync("/proc/");
+  let processes: string[] = [];
+  let files: string[] = readdirSync("/proc/");
   files.forEach((file: any) => {
     if (isNumeric(file)) {
       processes.push(file);
     }
   });
 
-  var procPromises: Promise<any>[] = [];
+  let procPromises: Promise<any>[] = [];
 
   processes.forEach((proc, i) => {
     procPromises.push(Promise.race([timeout(100), getProcSockets(proc)]));
@@ -37,22 +37,25 @@ export async function getUsedSockets(): Promise<{}> {
 async function getProcSockets(proc: string) {
   let fd = "/proc/" + proc + "/fd/";
 
+  let files: string[];
+
   try {
-    var files = readdirSync(fd);
+    files = readdirSync(fd);
   } catch (EACCES) {
     return;
   }
 
-  var sockets: string[] = [];
+  let sockets: string[] = [];
 
   files.forEach((file: string) => {
+    let linkString: string;
     try {
-      var linkString = readlinkSync(fd + file);
+      linkString = readlinkSync(fd + file);
     } catch (ENOENT) {
       return;
     }
     if (linkString && linkString.includes("socket")) {
-      var match: RegExpMatchArray | null = linkString.match(/socket\:\[([0-9]+)\]/);
+      let match: RegExpMatchArray | null = linkString.match(/socket:\[(\d+)]/);
       if (match != null) {
         sockets.push(match[1]);
       }
@@ -72,11 +75,12 @@ async function getProcSockets(proc: string) {
  * Get detailed information about given user.
  *
  * @param user - User PID
- * @returns - User name, owner and init command line
+ * @returns - Username, owner and init command line
  */
 export async function getUserData(user: string): Promise<string[]> {
+  let status: string;
   try {
-    var status: string = readFileSync("/proc/" + user + "/status", "utf8");
+    status = readFileSync("/proc/" + user + "/status", "utf8");
   } catch (ENOENT) {
     return ["error", "error", "error"];
   }

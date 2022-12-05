@@ -2,9 +2,11 @@ import { Box } from "neo-blessed";
 import { readFile } from "fs";
 import { join } from "path";
 import { whois } from "../utils/whois";
-var screen: any;
-var currentBox: any = null;
-var strings = {};
+
+let screen: any;
+let currentBox: any = null;
+const strings = {};
+
 const stringsNames = ["ports", "protocols", "queues", "states"];
 
 // Load strings
@@ -111,11 +113,7 @@ export function handlePopup(column: number, content: string | null) {
 function canShrink(content: string): boolean {
   let maxShrinkSize = Math.floor((Math.floor(screen.lines.length / 2) - 1) / 2);
   let numberOfLines = content.split(/\r\n|\r|\n/).length;
-  if (numberOfLines < maxShrinkSize) {
-    return true;
-  } else {
-    return false;
-  }
+  return numberOfLines < maxShrinkSize;
 }
 
 /**
@@ -180,8 +178,8 @@ function getUsersText(users: any): string | null {
     return null;
   }
 
-  var text: string = "";
-  var length: number = Object.keys(users).length - 1;
+  let text: string = "";
+  let length: number = Object.keys(users).length - 1;
   for (let i = 0; i < length; i++) {
     if (length > 1) {
       text += "{bold} - - User " + (i + 1) + " - -{/bold}\n";

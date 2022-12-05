@@ -7,7 +7,6 @@ import whoisJson = require("whois-json");
  * @returns - Formated text for popup content
  */
 export async function whois(domain: any): Promise<string> {
-  // TODO: Parse reserved IP adresses
   let domainName = domain.split(".");
 
   if (domainName.some(isNaN)) {
