@@ -9,6 +9,10 @@
    "description": "",
    "main": "build/main.js",
    "types": "build/main.d.ts",
+   "scripts": {
+      "build": "tsc --build",
+      "clean": "tsc --build --clean"
+   },
    "bin": {
       "neoss": "build/main.js"
    },
@@ -33,6 +37,7 @@
    ],
    "repository": "github:PabloLec/neoss",
    "dependencies": {
+      "@types/node": "^18.11.10",
       "ansi-regex": "^6.0.0",
       "blessed": "^0.1.81",
       "neo-blessed": "^0.2.0",
