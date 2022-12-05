@@ -1,4 +1,4 @@
-name: Publish Package to npm
+name: Publish package to npmjs
 on:
   release:
     types: [created]
@@ -15,6 +15,7 @@ jobs:
           node-version: '18.x'
           registry-url: 'https://registry.npmjs.org'
       - run: npm ci
+      - run: npm run clean
       - run: npm publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
