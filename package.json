@@ -13,6 +13,7 @@
       "build": "tsc --build",
       "clean": "tsc --build --clean"
    },
+   "preferGlobal": true,
    "bin": {
       "neoss": "build/main.js"
    },
