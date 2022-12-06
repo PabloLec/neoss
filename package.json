@@ -5,13 +5,12 @@
       "email": "pablolec@pm.me",
       "url": "https://github.com/PabloLec"
    },
-   "version": "1.1.5",
+   "version": "1.1.6",
    "description": "",
    "main": "build/main.js",
    "types": "build/main.d.ts",
    "scripts": {
-      "build": "tsc --build",
-      "clean": "tsc --build --clean"
+      "build": "tsc --build"
    },
    "preferGlobal": true,
    "bin": {
