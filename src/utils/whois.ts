@@ -1,4 +1,4 @@
-import whoisJson = require("whois-json");
+const whoiser = require("whoiser");
 
 /**
  * Perform a whois on given domain or IP.
@@ -15,12 +15,24 @@ export async function whois(domain: any): Promise<string> {
     domainName = domain;
   }
 
-  let data = await whoisJson(domainName);
-  data = toString(data);
-  if (data.includes("no entries")) {
-    return "No entries found.";
+  try {
+    let data = await whoiser(domainName);
+    let keys = Object.keys(data);
+    if (keys.length === 0) {
+      return "No entries found.";
+    }
+
+    if (keys.indexOf("range") != -1) {
+      return toString(data);
+    }
+    return toString(whoiser.firstResult(data));
+  } catch (e) {
+    if (JSON.stringify(e) === "{}") {
+      return "Private IP, check your neiborhood.\nhttps://en.wikipedia.org/wiki/Private_network";
+    }
+    return "Connection Refused";
   }
-  return data;
+  return "Unexpected error";
 }
 
 /**
