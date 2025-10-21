@@ -37,7 +37,7 @@
    ],
    "repository": "github:PabloLec/neoss",
    "dependencies": {
-      "@types/node": "^22.0.0",
+      "@types/node": "^24.9.1",
       "ansi-regex": "^6.0.0",
       "blessed": "^0.1.81",
       "neo-blessed": "^0.2.0",
