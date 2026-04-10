@@ -46,6 +46,6 @@
    "devDependencies": {
       "cheerio": "^1.0.0-rc.10",
       "ts-node": "^10.2.1",
-      "typescript": "^5.0.2"
+      "typescript": "^6.0.2"
    }
 }
