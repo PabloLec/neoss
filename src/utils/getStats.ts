@@ -71,14 +71,21 @@ async function parseUsersData(socket: string, i: number) {
  */
 async function reverseNSLookup() {
   for (const element of socketList) {
-    reverse(element.peerAddress, (err: Error | void | null, result: string[]) => {
-      if (!err) {
-        if (result.length == 0 || result[0].length == 0) {
-          return;
+    try {
+      reverse(element.peerAddress, (err: Error | void | null, result: string[]) => {
+        if (!err) {
+          if (result.length == 0 || result[0].length == 0) {
+            return;
+          }
+          element.peerAddress = result[0];
+          refreshScreen();
         }
-        element.peerAddress = result[0];
-        refreshScreen();
-      }
-    });
+      });
+    } catch (error) {
+      // DNS reverse lookup can throw synchronously on invalid addresses
+      // (e.g., EINVAL for malformed IPs). Silently ignore these cases
+      // and keep the original IP address.
+      continue;
+    }
   }
 }
