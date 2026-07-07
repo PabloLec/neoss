@@ -88,7 +88,15 @@ export async function getUserData(user: string): Promise<string[]> {
   let lines = status.split(/\r\n|\r|\n/);
   let name = lines[0].trim().split(/\s+/)[1];
   let uid = lines[9].trim().split(/\s+/)[1];
-  let owner = execSync("id -nu " + uid) + "";
+
+  let owner: string;
+  try {
+    owner = execSync("id -nu " + uid).toString().trim();
+  } catch (error) {
+    // UID may not map to a user in containerized environments (NixOS, etc.)
+    // Fall back to showing the numeric UID
+    owner = uid;
+  }
 
   let cmdline: string;
   try {
